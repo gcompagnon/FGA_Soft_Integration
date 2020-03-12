@@ -1,0 +1,25 @@
+﻿#%1% : date des fichiers voulu au format 120723
+#%2% : chemin des fichiers Nominaux
+
+
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#-------------------------------------------------
+# Connection au preset Nominaux
+open Index/Nominaux/indexfeed
+
+cd returns
+get *%1%.csv "%2%"\%1%\
+
+cd ../statistics
+get *%1%.csv "%2%"\%1%\
+
+# Disconnect
+close
+#---------------------------------------------------
+
+# Quit
+exit
+

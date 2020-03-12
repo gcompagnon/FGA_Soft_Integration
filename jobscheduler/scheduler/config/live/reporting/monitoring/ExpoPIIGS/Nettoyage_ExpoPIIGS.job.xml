@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Suppression des données dans la table TMP_RECAP_OP" order="yes">
+    <description>
+        <![CDATA[
+Suppression des données dans la table TMP_RECAP_OP
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "dateInventaire" value= ""/>
+	</params>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+        <variable name="SQL"
+				  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\REPORTING\ExpoPIIGS\Nettoyage_Histo_PIIGS.sql&quot;"/>
+
+
+
+        <variable name="INI"
+                  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>			  
+
+		<variable name="FGA_AUTOMATE_PATH" 
+		          value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+
+				 				  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est prise du SQL (la derniere valorisation disponible)
+	-->
+	<script language="shell">
+	<![CDATA[
+
+	  %FGA_AUTOMATE_PATH% -nogui -sql=%SQL% -ini=%INI% -datastore=FGA_PROD
+	  
+	 
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <!--run_time let_run="yes">
+        <weekdays>
+            <day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="17:00"/>
+            </day>
+        </weekdays>
+    </run_time-->
+</job>

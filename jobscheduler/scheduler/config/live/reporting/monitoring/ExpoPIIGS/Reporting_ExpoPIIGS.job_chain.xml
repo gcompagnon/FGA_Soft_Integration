@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<job_chain   orders_recoverable = "no">
+		<job_chain_node state="DB_Copy_ExpoPIIGS"  job="DB_Copy_ExpoPIIGS"          next_state="Production_Excel_ExpoPIIGS"  error_state="error" />
+		<job_chain_node state="Production_Excel_ExpoPIIGS"  job="Production_Excel_ExpoPIIGS"          next_state="Nettoyage_ExpoPIIGS"  error_state="error" />
+		<job_chain_node state="Nettoyage_ExpoPIIGS"  job="Nettoyage_ExpoPIIGS"          next_state="success"  error_state="error" />
+	<job_chain_node state       = "success"/>
+    <job_chain_node state       = "error"/>
+</job_chain>

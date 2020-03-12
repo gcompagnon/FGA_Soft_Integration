@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Envoi -> StatPro des fichiers RISQUES" order="no">
+    <description>
+        <![CDATA[
+Recuperation reports de StatPro
+        ]]>
+    </description>
+	<params>
+	  <param name = "date" value= "JJ/MM/AAAA"/>
+	</params>
+
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!S-log.txt&quot;"/>		  
+
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;script_SPA_UCITS_REPORT_QUOTI.txt&quot;"/>		  
+		  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle de la veille
+	-->
+	<script language="shell">
+	<![CDATA[
+
+echo off
+	  rem la date de la veille est mise au format YYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set date=%y:~6,4%%y:~3,2%%y:~0,2%
+	  
+	  IF "%SCHEDULER_PARAM_DATE%" == "JJ/MM/AAAA" GOTO CONFIG_DATE_AUTO
+
+
+	  :CONFIG_DATE_AUTO
+	  %SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter %date% 
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo OK sur la date %date% 
+		goto end
+
+		:error
+		echo Erreur sur la date %date% 
+
+
+		:end
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:15"/>
+            </day>		
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:15"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:15"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:15"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:15"/>
+            </day>
+		</weekdays>
+    </run_time>
+</job>

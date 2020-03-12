@@ -1,0 +1,26 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open StatPro
+
+#option transfer ascii
+
+cd /FederisToStatpro/Quoti/
+
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\QUOTI.TAS"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\QUOTI.VAL"
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

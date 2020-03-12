@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Extraction en fichier CSV des cours des OPCVM FGA pour SCD" order="no">
+	<description>
+		<![CDATA[
+Extraction en fichier CSV des cours des OPCVM FGA pour SCD
+        ]]>
+	</description>
+		<params>
+			<param name="date" value=""/>
+		</params>
+		<environment>
+			<variable name="CSV_FILES"
+				  value="Cours_OPCVM_FGA"/>
+			<variable name="SQL"
+					  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\SCD\Recup_cours_OPCVM_FGA.sql&quot;"/>
+			<variable name="OUTPUT_PATH"
+					  value="&quot;\\vill1\Partage\SCD_FILES_RECETTE\IN\DATA\FGA&quot;"/>
+			<variable name="FGA_AUTOMATE_PATH" value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+			<variable name="INI"
+					  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+
+		</environment>
+	<script language="shell">
+		<![CDATA[
+	
+	  rem la date de la veille est mise au format YYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_BARC.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _BARC.vbs') do (set y=%%y) 
+		del _BARC.vbs 2>nul
+	  set date=%y:~6,4%%y:~3,2%%y:~0,2%
+	 
+	  IF "%SCHEDULER_PARAM_DATE%" == "" GOTO CONFIG_DATE_AUTO
+	  
+	  set date=%SCHEDULER_PARAM_DATE:~6,4%%SCHEDULER_PARAM_DATE:~3,2%%SCHEDULER_PARAM_DATE:~0,2%
+	  
+	  :CONFIG_DATE_AUTO
+ 
+      %FGA_AUTOMATE_PATH% -nogui -csv=%OUTPUT_PATH% -@DATEEE="'%date:~6,2%/%date:~4,2%/%date:~0,4%'" -#names="%CSV_FILES%_%date%.csv" -datastore=OMEGA -sql=%SQL% -ini=%INI% %*
+
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		goto end
+
+		:error
+		echo Error!
+
+		:end
+    	
+	]]>
+	</script>
+
+	<run_time let_run="yes">
+		<weekdays>
+			<day day="1">
+				<period single_start="08:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="2">
+				<period single_start="08:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="3">
+				<period single_start="08:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="4">
+				<period single_start="08:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="5">
+				<period single_start="08:46" when_holiday="ignore_holiday"/>
+			</day>
+		</weekdays>
+	</run_time>
+
+</job>

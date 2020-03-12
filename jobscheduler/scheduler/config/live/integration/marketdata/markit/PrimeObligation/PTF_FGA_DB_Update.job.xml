@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Copy les inventaires de la base OMEGA vers FGA_PROD" order="no">
+    <description>
+        <![CDATA[
+			Effectue un SELECT sur OMEGA et insère le résultat dans PTF_FGA
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "dateInventaire" value= "JJ/MM/AAAA"/>
+	</params>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+        <variable name="SQL"
+				  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\OMEGA\PTF_FGA.sql&quot;"/>	  
+				  
+        <variable name="INI"
+                  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>			  
+
+		<variable name="FGA_AUTOMATE_PATH"
+		          value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+
+		<variable name="DBCOPY_PARAM"
+                  value="-#connectionSource=OMEGA -#connectionDest=PROD -#include=a -#exclude=b -#nomTable=PTF_FGA"/>			  
+            
+				 				  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est prise du SQL (la derniere valorisation disponible)
+	-->
+	<script language="shell">
+	<![CDATA[
+	            echo on
+	  rem la date de la veille est mise au format YYYYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set mydate=%y:~0,2%/%y:~3,2%/%y:~6,4%
+	  set dateInventaire=%mydate%
+
+	  
+	  IF "%SCHEDULER_PARAM_dateInventaire%" == "JJ/MM/AAAA" GOTO CONFIG_DATE_AUTO
+	  
+	  set mydate=%SCHEDULER_PARAM_dateInventaire:~0,10%
+	  set dateInventaire=%mydate%
+
+	  :CONFIG_DATE_AUTO
+
+	  
+	  %FGA_AUTOMATE_PATH% -nogui -sql=%SQL% -ini=%INI% -datastore=OMEGA -dbCopy=true %DBCOPY_PARAM% -@dateInventaire=%dateInventaire%
+	  
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <!--run_time let_run="yes">
+        <weekdays>
+            <day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="18:00"/>
+            </day>
+        </weekdays>
+    </run_time-->
+</job>

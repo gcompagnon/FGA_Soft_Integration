@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Connexion RDT avec l'AMF" order="no">
+    <description>
+        <![CDATA[
+Connection sur le site FTP AMF pour envoyer la liste des transactions Federis. Le fichier est ensuite conservé en backup.
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "extension" value= "AAAAMMJJ.1"/>
+	</params>
+
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!S-log.txt&quot;"/>		  
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;script_AMF_Reporting_Declaratif_Transactions.txt&quot;"/>		  
+		<variable name="INPUT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\AMF&quot;"/>
+		<variable name="OUTPUT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\AMF\HISTO&quot;"/>
+		<variable name="FILENAME"
+				  value="FEDERIGA01"/>
+
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle du jour
+	-->
+	<script language="shell">
+	<![CDATA[	
+	  rem la date de la veille est mise au format YYYYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set mydate=%y:~6,4%%y:~3,2%%y:~0,2%
+	  set extension=%mydate%".1"
+
+	  
+	  IF "%SCHEDULER_PARAM_EXTENSION%" == "AAAAMMJJ.1" GOTO CONFIG_DATE_AUTO
+	  
+	  set extension=%SCHEDULER_PARAM_EXTENSION%
+	  set mydate = %SCHEDULER_PARAM_EXTENSION:~0,8%
+
+
+	  :CONFIG_DATE_AUTO
+
+	  IF EXIST %OUTPUT_PATH%\%mydate:~0,6%\%FILENAME%%extension% (		
+			goto :exists
+		)
+		
+	  :FTP
+	  
+	  %SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter %INPUT_PATH% %FILENAME%%extension%.txt %FILENAME%%extension%
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		MKDIR %OUTPUT_PATH%\%mydate:~0,6%
+		MOVE /Y %INPUT_PATH%\%FILENAME%%extension%.txt %OUTPUT_PATH%\%mydate:~0,6%\%FILENAME%%extension% 
+
+		goto end
+
+		:error
+		echo Erreur sur la date %mydate% 
+
+		goto end
+		
+		:exists
+		echo Fichier deja existant %OUTPUT_PATH%\%mydate:~0,6%\%FILENAME%%extension% (parametrer l extension et relancer)
+		
+		:end
+    ]]>
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:10"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:10"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:10"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:10"/>
+            </day>
+			<day day="6">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:10"/>
+            </day>
+
+		</weekdays>
+    </run_time>
+</job>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Execution de la procedure d integration des données MSCI" order="no">
+    <description>
+        <![CDATA[
+
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "dateFichierDebut" value= "JJ/MM/AAAA"/>
+	  <param name = "dateFichierFin" value= "JJ/MM/AAAA"/>
+	</params>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA MarketData\LOG\FACTSET\!Y!M!D-!S-log.txt&quot;"/>		  
+
+		<variable name="SCRIPT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;FGA_Automate_Batch.exe&quot;"/>		  
+
+
+    </environment>
+
+<script language="shell">
+	<![CDATA[	
+          echo on
+	  rem la date de la veille est mise au format YYYYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set mydate=%y:~0,2%/%y:~3,2%/%y:~6,4%
+	  set dateFichier=%mydate%
+
+	  
+	  IF "%SCHEDULER_PARAM_dateFichierDebut%" == "JJ/MM/AAAA" GOTO CONFIG_DATE_AUTO
+	  
+	  set mydate=%SCHEDULER_PARAM_dateFichierDebut:~0,10%
+	  set dateFichier=%mydate%
+	  
+	  set dateFichierFin=%SCHEDULER_PARAM_dateFichierFin:~0,10%
+	  IF "%SCHEDULER_PARAM_dateFichierFin%" == "JJ/MM/AAAA"  ( set dateFichierFin=%dateFichier% )
+
+      %SCRIPT_PATH%\%SCRIPT% -dateStart="%dateFichier%" -dateEnd="%dateFichierFin%" -env=PROD -msci
+	  GOTO FIN
+	  
+	  :CONFIG_DATE_AUTO
+
+	  rem env = PROD pour la prod
+	  rem env = PREPROD pour la préprod
+	  %SCRIPT_PATH%\%SCRIPT% -dateStart="%dateFichier%" -dateEnd="%dateFichier%" -env=PROD -msci
+	  
+	  :FIN
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		goto end
+
+		:error
+		echo Erreur sur la date %mydate% 
+
+		goto end
+				
+		:end
+    ]]>
+	</script>  
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:25"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:25"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:25"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:25"/>
+            </day>
+			<day day="6">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:25"/>
+            </day>
+		</weekdays>
+    </run_time>
+</job>

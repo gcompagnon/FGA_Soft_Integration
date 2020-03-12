@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="extraction des données MSCI dans des fichiers pour OMEGA" order="no">
+    <description>
+        <![CDATA[
+Lecture des COURS et DEVISES MSCI pour produire 2 fichiers XLS en vue d 'intégrer dans OMEGA
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "dateFichier" value= "AAAAMMJJ"/>
+	</params>
+
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="SCRIPT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;FGA_Automate_Batch.exe&quot;"/>		  
+		<variable name="INPUT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA MarketData\INDICES\MSCI&quot;"/>
+		<variable name="OUTPUT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\QUOTIDIEN\IMPORT OMEGA\HISTO&quot;"/>
+		<variable name="OUTPUT_PATH2"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\QUOTIDIEN\IMPORT OMEGA&quot;"/>
+		<variable name="OUTPUT_PATH_SCD"
+				  value="&quot;\\vill1\Partage\SCD_FILES_RECETTE\IN\DATA\MSCI&quot;"/>				  
+		<variable name="TICKERS_EXCLUS"
+				  value="&quot;5 HK Equity,RDSA LN Equity&quot;"/>
+
+
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle du jour
+	-->
+	<script language="shell">
+	<![CDATA[	
+          echo off
+	  rem la date de la veille est mise au format YYYYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set mydate=%y:~6,4%%y:~3,2%%y:~0,2%
+	  set dateFichier=%mydate%
+
+	  
+	  IF "%SCHEDULER_PARAM_dateFichier%" == "AAAAMMJJ" GOTO CONFIG_DATE_AUTO
+	  
+	  set mydate=%SCHEDULER_PARAM_dateFichier:~0,8%
+	  set dateFichier=%mydate%
+
+	  :CONFIG_DATE_AUTO
+
+	  MKDIR %OUTPUT_PATH%\COURS_MSCI\%mydate:~0,6%
+	  MKDIR %OUTPUT_PATH%\DEVISES_MSCI\%mydate:~0,6%
+	  MKDIR %OUTPUT_PATH_SCD%\%mydate:~0,6%
+
+	  set XLS1=%OUTPUT_PATH%\COURS_MSCI\%mydate:~0,6%\COURS_MSCI_%mydate:~0,8%_YYYYMMDD_hhmmss.xls
+	  set XLS2=%OUTPUT_PATH%\DEVISES_MSCI\%mydate:~0,6%\DEVISES_MSCI_%mydate:~0,8%_YYYYMMDD_hhmmss.xls
+
+	  set CSV1=%OUTPUT_PATH_SCD%\%mydate:~0,6%\COURS_MSCI_%mydate:~0,8%.csv
+	  set CSV2=%OUTPUT_PATH_SCD%\%mydate:~0,6%\DEVISES_MSCI_%mydate:~0,8%.csv
+	  
+	  %SCRIPT_PATH%\%SCRIPT% -date="%dateFichier%" -msci_files_path=%INPUT_PATH%\%mydate:~0,6% -fichier_cours_xls=%XLS1% -fichier_devises_xls=%XLS2% -fichier_cours_csv=%CSV1% -fichier_devises_csv=%CSV2% -liste_exclusion_prix=%TICKERS_EXCLUS%
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+
+                rem copier le dernier creer dans OUTPUTPATH2
+                FOR /F %%I IN ('DIR %OUTPUT_PATH%\COURS_MSCI\%mydate:~0,6%\COURS_MSCI_%mydate:~0,8%_*.xls /B /O:-D') DO (
+                     COPY /Y %OUTPUT_PATH%\COURS_MSCI\%mydate:~0,6%\%%I %OUTPUT_PATH2%\COURS_MSCI.xls
+                     goto out1
+                )
+                :out1
+                FOR /F %%I IN ('DIR %OUTPUT_PATH%\DEVISES_MSCI\%mydate:~0,6%\DEVISES_MSCI_%mydate:~0,8%_*.xls /B /O:-D') DO (
+                     COPY /Y %OUTPUT_PATH%\DEVISES_MSCI\%mydate:~0,6%\%%I %OUTPUT_PATH2%\DEVISES_MSCI.xls
+                     goto out2
+                )
+                :out2
+		goto end
+
+		:error
+		echo Erreur sur la date %mydate% 
+
+		goto end
+				
+		:end
+    ]]>
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:22"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:22"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:22"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:22"/>
+            </day>
+			<day day="6">
+                <period when_holiday="ignore_holiday"
+                        single_start="03:22"/>
+            </day>
+
+		</weekdays>
+    </run_time>
+</job>

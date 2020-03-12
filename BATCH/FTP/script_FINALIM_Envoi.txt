@@ -1,0 +1,23 @@
+﻿#%1% : chemin du fichier source
+#%2% : nom du fichier source
+#%3% : nom du fichier en destination
+
+# Disable overwrite confirmations
+option confirm off
+# all prompts are automatically answered negatively
+option batch abort
+
+open FINALIM
+option transfer ascii
+
+put "%1%\%2%" "%3%" 
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

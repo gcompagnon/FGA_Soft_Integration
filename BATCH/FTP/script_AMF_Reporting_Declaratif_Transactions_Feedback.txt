@@ -1,0 +1,32 @@
+﻿#%1% : nom du fichier source
+#%2% : chemin du fichier destination
+ 
+# Disable overwrite confirmations
+option confirm off
+# all prompts are automatically answered negatively
+option batch abort
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open AMF
+
+option transfer ascii
+
+cd /feedback/
+
+get "%1%" "%2%\" 
+
+# pour les tests: le fichier est test_feedback.txt
+
+
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

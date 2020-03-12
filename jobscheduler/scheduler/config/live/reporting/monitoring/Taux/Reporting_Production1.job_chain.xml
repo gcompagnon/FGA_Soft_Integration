@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<job_chain   orders_recoverable = "no">
+		<job_chain_node state="Compute_MonitoringMaturite1"  job="Production_Compute_MonitoringMaturite"          next_state="Compute_MonitoringMaturite2"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringMaturite2"  job="Production_Compute_MonitoringMaturiteDu"          next_state="Compute_MonitoringMaturite3"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringMaturite3"  job="Production_Compute_MonitoringMaturiteRe"          next_state="Compute_MonitoringMaturite4"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringMaturite4"  job="Production_Compute_MonitoringMaturiteSe"          next_state="Compute_MonitoringMaturite5"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringMaturite5"  job="Production_Compute_MonitoringMaturiteVN"          next_state="Compute_MonitoringRating1"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringRating1"  job="Production_Compute_MonitoringRating"          next_state="Compute_MonitoringRating2"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringRating2"  job="Production_Compute_MonitoringRatingDu"          next_state="Compute_MonitoringRating3"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringRating3"  job="Production_Compute_MonitoringRatingRe"          next_state="Compute_MonitoringRating4"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringRating4"  job="Production_Compute_MonitoringRatingSe"          next_state="Compute_MonitoringRating5"  error_state="error" />
+		<job_chain_node state="Compute_MonitoringRating5"  job="Production_Compute_MonitoringRatingVN"          next_state="Excel_MonitoringMaturite1"  error_state="error" />
+
+
+		
+  	   <job_chain_node state="Excel_MonitoringMaturite1"   job="Production_Excel_MonitoringMaturite"          next_state="Excel_MonitoringMaturite2"  error_state="error" />
+  	   <job_chain_node state="Excel_MonitoringMaturite2"   job="Production_Excel_MonitoringMaturiteDu"          next_state="Excel_MonitoringMaturite3"  error_state="error" />
+  	   <job_chain_node state="Excel_MonitoringMaturite3"   job="Production_Excel_MonitoringMaturiteRe"          next_state="Excel_MonitoringMaturite4"  error_state="error" />
+  	   <job_chain_node state="Excel_MonitoringMaturite4"   job="Production_Excel_MonitoringMaturiteSe"          next_state="Excel_MonitoringMaturite5"  error_state="error" /> 
+  	   <job_chain_node state="Excel_MonitoringMaturite5"   job="Production_Excel_MonitoringMaturiteVN"          next_state="Excel_MonitoringRating1"  error_state="error" /> 
+	   
+	   <job_chain_node state="Excel_MonitoringRating1"   job="Production_Excel_MonitoringRating"          next_state="Excel_MonitoringRating2"  error_state="error" />
+	   <job_chain_node state="Excel_MonitoringRating2"   job="Production_Excel_MonitoringRatingDu"          next_state="Excel_MonitoringRating3"  error_state="error" />
+	   <job_chain_node state="Excel_MonitoringRating3"   job="Production_Excel_MonitoringRatingRe"          next_state="Excel_MonitoringRating4"  error_state="error" />
+	   <job_chain_node state="Excel_MonitoringRating4"   job="Production_Excel_MonitoringRatingSe"          next_state="Excel_MonitoringRating5"  error_state="error" />
+	   <job_chain_node state="Excel_MonitoringRating5"   job="Production_Excel_MonitoringRatingVN"          next_state="success"  error_state="error" />
+
+	   
+	  
+	<job_chain_node state       = "success"/>
+    <job_chain_node state       = "error"/>
+</job_chain>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title = "Cours OTC Bond Forward">
+<description>
+ donne la liste des prix OTC des instruments (Bond Forward) sur toutes les dates disponibles
+</description>
+    <process file="\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe"
+             param="-nogui -@like_code_produit1='FW%' -@date_start=NOW-365 -sql=$SQL -ini=$INI -xls=$XLS">
+        <environment>
+            <variable name="SQL"
+                      value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\EXTERNE\Prix_Historique_Produits_Devises.sql&quot;"/>					 
+		    <variable name="XLS"
+                      value="&quot;\\vill1\Public\,FGA Documentation titres\Bond Forward\Historique-OTCTrade.xls&quot;"/>
+            <variable name="INI"
+                      value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+        </environment>
+    </process>
+	<!--start_when_directory_changed directory="\\vill1\Partage\TQA\TOTO"  regex="[.]*\.txt"/-->
+    <run_time let_run="yes">
+        <period single_start="18:00"/>
+    </run_time>
+</job>

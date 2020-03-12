@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Telechargement des données FACTSET via FTP" order="no">
+    <description>
+        <![CDATA[
+Connection et telechargement des .csv quotidiens pour les données FACTSET
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "date" value= "JJ/MM/AAAA"/>
+	</params>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA MarketData\LOG\FACTSET\!Y!M!D-!S-log.txt&quot;"/>		  
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  
+	
+		<variable name="SCRIPT"
+				  value="&quot;script_Factset.txt&quot;"/>		  
+
+		<variable name="OUTPUT_PATH"
+				  value="&quot;\\vill1\Partage\,FGA MarketData\FACTSET&quot;"/>
+				  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle de la veille
+	-->
+	<script language="shell">
+	<![CDATA[
+	  rem la date de la veille est mise au format YYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-1") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set date=%y:~6,4%%y:~3,2%%y:~0,2%
+	  
+	  IF "%SCHEDULER_PARAM_DATE%" == "JJ/MM/AAAA" GOTO CONFIG_DATE_AUTO
+	  
+	  set date=%SCHEDULER_PARAM_DATE:~6,4%%SCHEDULER_PARAM_DATE:~3,2%%SCHEDULER_PARAM_DATE:~0,2%
+	  
+	  :CONFIG_DATE_AUTO
+	  %SCRIPT_PATH%\Winscp.exe /console /timeout=180 /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter %date% %OUTPUT_PATH%\%date:~0,6%
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo OK sur la date %date% pour 
+		dir %OUTPUT_PATH%\%date:~0,6%\*%date%.csv /b/a-d | find /v /c "::"
+		echo  fichiers 
+		goto end
+
+		:error
+		echo Erreur sur la date %date% 
+
+
+		:end
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="08:10"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="08:10"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="08:10"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="08:10"/>
+            </day>
+			<day day="6">
+                <period when_holiday="ignore_holiday"
+                        single_start="08:10"/>
+            </day>
+		</weekdays>
+    </run_time>
+</job>

@@ -1,0 +1,17 @@
+<job order="yes">
+        <params>
+          <param name="sample_variable_1" value="sample_value_jp1"/>
+          <param name="sample_variable_2" value="sample_value_jp2"/>
+          <param name="sample_variable_3" value="sample_value_jp3"/>
+        </params>        
+      	<script language="shell"><![CDATA[
+      	  echo SCHEDULER_PARAM_SAMPLE_VARIABLE_1=%SCHEDULER_PARAM_SAMPLE_VARIABLE_1%
+      	  echo SCHEDULER_PARAM_SAMPLE_VARIABLE_2=%SCHEDULER_PARAM_SAMPLE_VARIABLE_2%
+      	  echo SCHEDULER_PARAM_SAMPLE_VARIABLE_3=%SCHEDULER_PARAM_SAMPLE_VARIABLE_3%
+      	  
+      	  echo sample_shell_all= sample_shell_all: %date%%time%>>%SCHEDULER_RETURN_VALUES% 
+
+      	  echo sample_shell_now= sample_shell_now: %date%%time%>>%SCHEDULER_RETURN_VALUES% 
+      	  echo sample_shell_a  = sample_shell_a:   %date%%time%>>%SCHEDULER_RETURN_VALUES% 
+      	]]></script> 
+</job>

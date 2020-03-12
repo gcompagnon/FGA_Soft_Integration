@@ -1,0 +1,21 @@
+﻿#%1% : nom du fichier
+#%2% : chemin des fichiers
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur SFTP BNP pour poser des fichiers , suppression apres transfert
+
+open BP2S_SFTP
+
+
+cd in
+
+put -delete -nopreservetime "%2%"\"%1%"
+
+close
+#-----------------------------------------------------
+
+exit
+

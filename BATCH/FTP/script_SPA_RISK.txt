@@ -1,0 +1,28 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open StatPro
+
+#option transfer ascii
+
+cd /FederisToStatpro/Risk/
+
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\RISQUES.HOL"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\RISQUES.SEC"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\RISQUES.TAS"
+
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

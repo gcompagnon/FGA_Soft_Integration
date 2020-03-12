@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<?xml-stylesheet type="text/xsl" href="scheduler_documentation.xsl" ?>
+<spooler>
+    <config mail_xslt_stylesheet="config/scheduler_mail.xsl"
+            port="4444">
+        <params/>
+
+
+        <!-- host name, IP address or network address of hosts, that are allowed to communicate with the job scheduler -->
+        <security ignore_unknown_hosts="no">
+            <allowed_host host="localhost"
+                          level="all"/>
+
+            <allowed_host host="FX007119M"
+                          level="all"/>
+
+            <allowed_host host="0.0.0.0"
+                          level="all"/>
+        </security>
+
+
+        <process_classes>
+            <process_class max_processes="30"/>
+
+            <!-- max. number of processes in default process class -->
+            <process_class max_processes="10"
+                           name="single"/>
+
+            <!-- max. number of processes running in single instances -->
+            <process_class max_processes="10"
+                           name="multi"/>
+        </process_classes>
+
+
+        <http_server>
+            <http_directory path="${SCHEDULER_HOME}/"
+                            url_path="/scheduler_home/"/>
+
+            <http_directory path="${SCHEDULER_DATA}/"
+                            url_path="/scheduler_data/"/>
+        </http_server>
+    </config>
+</spooler>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<job_chain> 
+        <job_chain_node state="a"  job="sample_shell_a" next_state="b"       error_state="error" /> 
+        <job_chain_node state="b"  job="sample_shell_b" next_state="c"       error_state="error" /> 
+        <job_chain_node state="c"  job="sample_shell_c" next_state="success" error_state="error" /> 
+        <job_chain_node state="success" /> 
+        <job_chain_node state="error" /> 
+</job_chain>

@@ -1,0 +1,34 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+#Auto abort on errors 
+option batch abort
+
+# ---------------------------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open StatPro
+
+#option transfer ascii
+
+cd /FederisToStatpro/CST/
+
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\CST_\cst_desc.txt"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\CST_\cst_hist.txt"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\CST_\cst_alias.cli"
+
+cd /FederisToStatpro/Templates/
+
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\CST_\fed*.XML"
+
+
+# Disconnect
+close
+
+# ---------------------------------------------------------------------
+
+
+# Quit
+exit
+

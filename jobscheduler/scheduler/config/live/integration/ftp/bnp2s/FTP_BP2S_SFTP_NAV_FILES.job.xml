@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Récupération des NAV_FILES.ZIP chez BP2S" order="no">
+    <description>
+        <![CDATA[
+Connection et get du fichier *.NAV_FILES*.zip
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!T-!S-NAVFiles-log.txt&quot;"/>		  
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;script_BP2S_SFTP_Get_Extractions.txt&quot;"/>
+		<variable name="OUTPUT"
+				  value="&quot;\\vill1\Partage\SCD_FILES_PROD\IN\VALO\BP2S&quot;"/>
+		<variable name="FILE"
+				  value="&quot;*.NAV_FILES_*.zip&quot;"/>
+
+    </environment>
+	<script language="shell">
+	<![CDATA[
+	@echo off
+	set mydate=%date:~6,4%%date:~3,2%%date:~0,2%
+	
+	 %SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter %FILE% %OUTPUT%
+      
+	  IF errorlevel 1 GOTO error
+
+		echo Success		
+		MKDIR %OUTPUT%\Unzip
+	
+		rem dezip et mettre les fichiers dans les repertoires adéquates
+		"C:\Program Files (x86)\7-Zip\7z.exe" e %OUTPUT%\%FILE% -o%OUTPUT%\Unzip -y
+
+		rem Archivage des fichiers traites		
+		move %OUTPUT%\%FILE% %OUTPUT%\Archive\ 
+	
+		rem un repertoire pour mettre les fichiers traites ds SCD
+		MKDIR "\\vill1\Partage\SCD_FILES_PROD\IN\SWIFT\RETOUR\Traite_%mydate%_PROD"
+								
+		rem deplacements des fichiers dans les rep. SCD
+		xcopy %OUTPUT%\Unzip\Standard_Financial_Statements_-_CSV.*.csv "\\vill1\Partage\SCD_FILES_PROD\IN\SWIFT\RETOUR\Traite_%mydate%_PROD"
+		xcopy %OUTPUT%\Unzip\Standard_EOD_Net_Positions_-_CSV.*.csv "\\vill1\Partage\SCD_FILES_PROD\IN\SWIFT\RETOUR\Traite_%mydate%_PROD"		
+		move %OUTPUT%\Unzip\Standard_Financial_Statements_-_CSV.*.csv \\vill1\Partage\SCD_FILES_PROD\IN\UBIX\BP2S\
+		move %OUTPUT%\Unzip\Standard_EOD_Net_Positions_-_CSV.*.csv \\vill1\Partage\SCD_FILES_PROD\IN\UBIX\BP2S\
+		
+		echo "Fichier CSTA_ALL001_*.csv"		
+		rem ne prendre que le fichier le plus important en taille
+		echo off  
+		for /f "delims=" %%x in ('dir /os /b %OUTPUT%\Unzip\CSTA_ALL001_*.csv') do set treso=%%x
+		echo %treso%				
+		xcopy %OUTPUT%\Unzip\%treso% "\\vill1\Partage\SCD_FILES_PROD\IN\SWIFT\RETOUR\Traite_%mydate%_PROD"
+		move %OUTPUT%\Unzip\%treso% \\vill1\Partage\SCD_FILES_PROD\IN\RECO\BP2S\CASH\
+
+		rem archivage du "pack vl" 
+		xcopy %OUTPUT%\Unzip\*_FONDS_*_Standard_PAR_-_Historique_des_frais_de_gestion*.csv %OUTPUT%\INV_UNZIP
+		xcopy %OUTPUT%\Unzip\*_FONDS_*_Standard_PAR_-_Dernieres_valeurs_liquidatives*.csv %OUTPUT%\INV_UNZIP
+		xcopy %OUTPUT%\Unzip\*_FONDS_*_Standard_PAR_-_Inventaire*.csv %OUTPUT%\INV_UNZIP
+		rem move %OUTPUT%\Unzip\*_FONDS_*_Standard_PAR_-_Historique_des_frais_de_gestion*.csv \\vill1\Partage\SCD_FILES_PROD\IN\VALO\BP2S\
+		rem move %OUTPUT%\Unzip\*_FONDS_*_Standard_PAR_-_Dernieres_valeurs_liquidatives*.csv \\vill1\Partage\SCD_FILES_PROD\IN\VALO\BP2S\
+		rem move %OUTPUT%\Unzip\*_FONDS_*_Standard_PAR_-_Inventaire*.csv \\vill1\Partage\SCD_FILES_PROD\IN\VALO\BP2S\		
+				
+		rem deplacer des fichiers mouvements dans Pack VL
+		xcopy %OUTPUT%\Unzip\*_Standard_PAR_-_Mouvements*.csv %OUTPUT%\INV_UNZIP
+		xcopy %OUTPUT%\Unzip\*_Standard_PAR_-_Taux_de_change*.csv %OUTPUT%\INV_UNZIP
+		rem pas de move car non traite dans SCD
+				
+		rem tout se qui reste est mis dans le repertoire swift
+		MKDIR "\\vill1\Partage\SCD_FILES_PROD\IN\SWIFT\RETOUR\NonTraite_%mydate%_PROD"
+		move %OUTPUT%\Unzip\* \\vill1\Partage\SCD_FILES_PROD\IN\SWIFT\RETOUR\NonTraite_%mydate%_PROD\
+		
+		goto end
+
+		:error
+		echo Error!
+
+		:end
+    ]]>	
+	</script>
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+				<period when_holiday="ignore_holiday" single_start="8:00"/>
+<period when_holiday="ignore_holiday" single_start="8:05"/>
+<period when_holiday="ignore_holiday" single_start="8:10"/>
+<period when_holiday="ignore_holiday" single_start="8:15"/>
+<period when_holiday="ignore_holiday" single_start="8:20"/>
+<period when_holiday="ignore_holiday" single_start="8:25"/>
+<period when_holiday="ignore_holiday" single_start="8:30"/>
+<period when_holiday="ignore_holiday" single_start="8:35"/>
+<period when_holiday="ignore_holiday" single_start="8:40"/>
+<period when_holiday="ignore_holiday" single_start="8:45"/>
+<period when_holiday="ignore_holiday" single_start="8:50"/>
+<period when_holiday="ignore_holiday" single_start="8:55"/>
+<period when_holiday="ignore_holiday" single_start="9:00"/>
+<period when_holiday="ignore_holiday" single_start="9:05"/>
+<period when_holiday="ignore_holiday" single_start="9:10"/>
+<period when_holiday="ignore_holiday" single_start="9:15"/>
+<period when_holiday="ignore_holiday" single_start="9:20"/>
+<period when_holiday="ignore_holiday" single_start="9:25"/>
+<period when_holiday="ignore_holiday" single_start="9:30"/>
+<period when_holiday="ignore_holiday" single_start="9:35"/>
+<period when_holiday="ignore_holiday" single_start="9:40"/>
+<period when_holiday="ignore_holiday" single_start="9:45"/>
+<period when_holiday="ignore_holiday" single_start="9:50"/>
+<period when_holiday="ignore_holiday" single_start="9:55"/>
+<period when_holiday="ignore_holiday" single_start="10:00"/>
+<period when_holiday="ignore_holiday" single_start="10:05"/>
+<period when_holiday="ignore_holiday" single_start="10:10"/>
+<period when_holiday="ignore_holiday" single_start="10:15"/>
+<period when_holiday="ignore_holiday" single_start="10:20"/>
+<period when_holiday="ignore_holiday" single_start="10:25"/>
+<period when_holiday="ignore_holiday" single_start="10:30"/>
+<period when_holiday="ignore_holiday" single_start="10:35"/>
+<period when_holiday="ignore_holiday" single_start="10:40"/>
+<period when_holiday="ignore_holiday" single_start="10:45"/>
+<period when_holiday="ignore_holiday" single_start="10:50"/>
+<period when_holiday="ignore_holiday" single_start="10:55"/>
+<period when_holiday="ignore_holiday" single_start="11:00"/>
+<period when_holiday="ignore_holiday" single_start="11:05"/>
+<period when_holiday="ignore_holiday" single_start="11:10"/>
+<period when_holiday="ignore_holiday" single_start="11:15"/>
+<period when_holiday="ignore_holiday" single_start="11:20"/>
+<period when_holiday="ignore_holiday" single_start="11:25"/>
+<period when_holiday="ignore_holiday" single_start="11:30"/>
+<period when_holiday="ignore_holiday" single_start="11:35"/>
+<period when_holiday="ignore_holiday" single_start="11:40"/>
+<period when_holiday="ignore_holiday" single_start="11:45"/>
+<period when_holiday="ignore_holiday" single_start="11:50"/>
+<period when_holiday="ignore_holiday" single_start="11:55"/>
+<period when_holiday="ignore_holiday" single_start="12:00"/>
+<period when_holiday="ignore_holiday" single_start="12:05"/>
+<period when_holiday="ignore_holiday" single_start="12:10"/>
+<period when_holiday="ignore_holiday" single_start="12:15"/>
+<period when_holiday="ignore_holiday" single_start="12:20"/>
+<period when_holiday="ignore_holiday" single_start="12:25"/>
+<period when_holiday="ignore_holiday" single_start="12:30"/>
+<period when_holiday="ignore_holiday" single_start="12:35"/>
+<period when_holiday="ignore_holiday" single_start="12:40"/>
+<period when_holiday="ignore_holiday" single_start="12:45"/>
+<period when_holiday="ignore_holiday" single_start="12:50"/>
+<period when_holiday="ignore_holiday" single_start="12:55"/>
+<period when_holiday="ignore_holiday" single_start="13:00"/>
+<period when_holiday="ignore_holiday" single_start="13:05"/>
+<period when_holiday="ignore_holiday" single_start="13:10"/>
+<period when_holiday="ignore_holiday" single_start="13:15"/>
+<period when_holiday="ignore_holiday" single_start="13:20"/>
+<period when_holiday="ignore_holiday" single_start="13:25"/>
+<period when_holiday="ignore_holiday" single_start="13:30"/>
+<period when_holiday="ignore_holiday" single_start="13:35"/>
+<period when_holiday="ignore_holiday" single_start="13:40"/>
+<period when_holiday="ignore_holiday" single_start="13:45"/>
+<period when_holiday="ignore_holiday" single_start="13:50"/>
+<period when_holiday="ignore_holiday" single_start="13:55"/>
+<period when_holiday="ignore_holiday" single_start="14:00"/>
+<period when_holiday="ignore_holiday" single_start="14:05"/>
+<period when_holiday="ignore_holiday" single_start="14:10"/>
+<period when_holiday="ignore_holiday" single_start="14:15"/>
+<period when_holiday="ignore_holiday" single_start="14:20"/>
+<period when_holiday="ignore_holiday" single_start="14:25"/>
+<period when_holiday="ignore_holiday" single_start="14:30"/>
+<period when_holiday="ignore_holiday" single_start="14:35"/>
+<period when_holiday="ignore_holiday" single_start="14:40"/>
+<period when_holiday="ignore_holiday" single_start="14:45"/>
+<period when_holiday="ignore_holiday" single_start="14:50"/>
+<period when_holiday="ignore_holiday" single_start="14:55"/>
+<period when_holiday="ignore_holiday" single_start="15:00"/>
+<period when_holiday="ignore_holiday" single_start="15:05"/>
+<period when_holiday="ignore_holiday" single_start="15:10"/>
+<period when_holiday="ignore_holiday" single_start="15:15"/>
+<period when_holiday="ignore_holiday" single_start="15:20"/>
+<period when_holiday="ignore_holiday" single_start="15:25"/>
+<period when_holiday="ignore_holiday" single_start="15:30"/>
+<period when_holiday="ignore_holiday" single_start="15:35"/>
+<period when_holiday="ignore_holiday" single_start="15:40"/>
+<period when_holiday="ignore_holiday" single_start="15:45"/>
+<period when_holiday="ignore_holiday" single_start="15:50"/>
+<period when_holiday="ignore_holiday" single_start="15:55"/>
+<period when_holiday="ignore_holiday" single_start="16:00"/>
+<period when_holiday="ignore_holiday" single_start="16:05"/>
+<period when_holiday="ignore_holiday" single_start="16:10"/>
+<period when_holiday="ignore_holiday" single_start="16:15"/>
+<period when_holiday="ignore_holiday" single_start="16:20"/>
+<period when_holiday="ignore_holiday" single_start="16:25"/>
+<period when_holiday="ignore_holiday" single_start="16:30"/>
+<period when_holiday="ignore_holiday" single_start="16:35"/>
+<period when_holiday="ignore_holiday" single_start="16:40"/>
+<period when_holiday="ignore_holiday" single_start="16:45"/>
+<period when_holiday="ignore_holiday" single_start="16:50"/>
+<period when_holiday="ignore_holiday" single_start="16:55"/>
+<period when_holiday="ignore_holiday" single_start="17:00"/>
+<period when_holiday="ignore_holiday" single_start="17:05"/>
+<period when_holiday="ignore_holiday" single_start="17:10"/>
+<period when_holiday="ignore_holiday" single_start="17:15"/>
+<period when_holiday="ignore_holiday" single_start="17:20"/>
+<period when_holiday="ignore_holiday" single_start="17:25"/>
+<period when_holiday="ignore_holiday" single_start="17:30"/>
+<period when_holiday="ignore_holiday" single_start="17:35"/>
+<period when_holiday="ignore_holiday" single_start="17:40"/>
+<period when_holiday="ignore_holiday" single_start="17:45"/>
+<period when_holiday="ignore_holiday" single_start="17:50"/>
+<period when_holiday="ignore_holiday" single_start="17:55"/>
+<period when_holiday="ignore_holiday" single_start="18:00"/>
+<period when_holiday="ignore_holiday" single_start="18:05"/>
+<period when_holiday="ignore_holiday" single_start="18:10"/>
+<period when_holiday="ignore_holiday" single_start="18:15"/>
+<period when_holiday="ignore_holiday" single_start="18:20"/>
+<period when_holiday="ignore_holiday" single_start="18:25"/>
+<period when_holiday="ignore_holiday" single_start="18:30"/>
+<period when_holiday="ignore_holiday" single_start="18:35"/>
+<period when_holiday="ignore_holiday" single_start="18:40"/>
+<period when_holiday="ignore_holiday" single_start="18:45"/>
+<period when_holiday="ignore_holiday" single_start="18:50"/>
+<period when_holiday="ignore_holiday" single_start="18:55"/>
+<period when_holiday="ignore_holiday" single_start="19:00"/>
+
+			</day>
+			<day day="2">
+			<period when_holiday="ignore_holiday" single_start="8:00"/>
+<period when_holiday="ignore_holiday" single_start="8:05"/>
+<period when_holiday="ignore_holiday" single_start="8:10"/>
+<period when_holiday="ignore_holiday" single_start="8:15"/>
+<period when_holiday="ignore_holiday" single_start="8:20"/>
+<period when_holiday="ignore_holiday" single_start="8:25"/>
+<period when_holiday="ignore_holiday" single_start="8:30"/>
+<period when_holiday="ignore_holiday" single_start="8:35"/>
+<period when_holiday="ignore_holiday" single_start="8:40"/>
+<period when_holiday="ignore_holiday" single_start="8:45"/>
+<period when_holiday="ignore_holiday" single_start="8:50"/>
+<period when_holiday="ignore_holiday" single_start="8:55"/>
+<period when_holiday="ignore_holiday" single_start="9:00"/>
+<period when_holiday="ignore_holiday" single_start="9:05"/>
+<period when_holiday="ignore_holiday" single_start="9:10"/>
+<period when_holiday="ignore_holiday" single_start="9:15"/>
+<period when_holiday="ignore_holiday" single_start="9:20"/>
+<period when_holiday="ignore_holiday" single_start="9:25"/>
+<period when_holiday="ignore_holiday" single_start="9:30"/>
+<period when_holiday="ignore_holiday" single_start="9:35"/>
+<period when_holiday="ignore_holiday" single_start="9:40"/>
+<period when_holiday="ignore_holiday" single_start="9:45"/>
+<period when_holiday="ignore_holiday" single_start="9:50"/>
+<period when_holiday="ignore_holiday" single_start="9:55"/>
+<period when_holiday="ignore_holiday" single_start="10:00"/>
+<period when_holiday="ignore_holiday" single_start="10:05"/>
+<period when_holiday="ignore_holiday" single_start="10:10"/>
+<period when_holiday="ignore_holiday" single_start="10:15"/>
+<period when_holiday="ignore_holiday" single_start="10:20"/>
+<period when_holiday="ignore_holiday" single_start="10:25"/>
+<period when_holiday="ignore_holiday" single_start="10:30"/>
+<period when_holiday="ignore_holiday" single_start="10:35"/>
+<period when_holiday="ignore_holiday" single_start="10:40"/>
+<period when_holiday="ignore_holiday" single_start="10:45"/>
+<period when_holiday="ignore_holiday" single_start="10:50"/>
+<period when_holiday="ignore_holiday" single_start="10:55"/>
+<period when_holiday="ignore_holiday" single_start="11:00"/>
+<period when_holiday="ignore_holiday" single_start="11:05"/>
+<period when_holiday="ignore_holiday" single_start="11:10"/>
+<period when_holiday="ignore_holiday" single_start="11:15"/>
+<period when_holiday="ignore_holiday" single_start="11:20"/>
+<period when_holiday="ignore_holiday" single_start="11:25"/>
+<period when_holiday="ignore_holiday" single_start="11:30"/>
+<period when_holiday="ignore_holiday" single_start="11:35"/>
+<period when_holiday="ignore_holiday" single_start="11:40"/>
+<period when_holiday="ignore_holiday" single_start="11:45"/>
+<period when_holiday="ignore_holiday" single_start="11:50"/>
+<period when_holiday="ignore_holiday" single_start="11:55"/>
+<period when_holiday="ignore_holiday" single_start="12:00"/>
+<period when_holiday="ignore_holiday" single_start="12:05"/>
+<period when_holiday="ignore_holiday" single_start="12:10"/>
+<period when_holiday="ignore_holiday" single_start="12:15"/>
+<period when_holiday="ignore_holiday" single_start="12:20"/>
+<period when_holiday="ignore_holiday" single_start="12:25"/>
+<period when_holiday="ignore_holiday" single_start="12:30"/>
+<period when_holiday="ignore_holiday" single_start="12:35"/>
+<period when_holiday="ignore_holiday" single_start="12:40"/>
+<period when_holiday="ignore_holiday" single_start="12:45"/>
+<period when_holiday="ignore_holiday" single_start="12:50"/>
+<period when_holiday="ignore_holiday" single_start="12:55"/>
+<period when_holiday="ignore_holiday" single_start="13:00"/>
+<period when_holiday="ignore_holiday" single_start="13:05"/>
+<period when_holiday="ignore_holiday" single_start="13:10"/>
+<period when_holiday="ignore_holiday" single_start="13:15"/>
+<period when_holiday="ignore_holiday" single_start="13:20"/>
+<period when_holiday="ignore_holiday" single_start="13:25"/>
+<period when_holiday="ignore_holiday" single_start="13:30"/>
+<period when_holiday="ignore_holiday" single_start="13:35"/>
+<period when_holiday="ignore_holiday" single_start="13:40"/>
+<period when_holiday="ignore_holiday" single_start="13:45"/>
+<period when_holiday="ignore_holiday" single_start="13:50"/>
+<period when_holiday="ignore_holiday" single_start="13:55"/>
+<period when_holiday="ignore_holiday" single_start="14:00"/>
+<period when_holiday="ignore_holiday" single_start="14:05"/>
+<period when_holiday="ignore_holiday" single_start="14:10"/>
+<period when_holiday="ignore_holiday" single_start="14:15"/>
+<period when_holiday="ignore_holiday" single_start="14:20"/>
+<period when_holiday="ignore_holiday" single_start="14:25"/>
+<period when_holiday="ignore_holiday" single_start="14:30"/>
+<period when_holiday="ignore_holiday" single_start="14:35"/>
+<period when_holiday="ignore_holiday" single_start="14:40"/>
+<period when_holiday="ignore_holiday" single_start="14:45"/>
+<period when_holiday="ignore_holiday" single_start="14:50"/>
+<period when_holiday="ignore_holiday" single_start="14:55"/>
+<period when_holiday="ignore_holiday" single_start="15:00"/>
+<period when_holiday="ignore_holiday" single_start="15:05"/>
+<period when_holiday="ignore_holiday" single_start="15:10"/>
+<period when_holiday="ignore_holiday" single_start="15:15"/>
+<period when_holiday="ignore_holiday" single_start="15:20"/>
+<period when_holiday="ignore_holiday" single_start="15:25"/>
+<period when_holiday="ignore_holiday" single_start="15:30"/>
+<period when_holiday="ignore_holiday" single_start="15:35"/>
+<period when_holiday="ignore_holiday" single_start="15:40"/>
+<period when_holiday="ignore_holiday" single_start="15:45"/>
+<period when_holiday="ignore_holiday" single_start="15:50"/>
+<period when_holiday="ignore_holiday" single_start="15:55"/>
+<period when_holiday="ignore_holiday" single_start="16:00"/>
+<period when_holiday="ignore_holiday" single_start="16:05"/>
+<period when_holiday="ignore_holiday" single_start="16:10"/>
+<period when_holiday="ignore_holiday" single_start="16:15"/>
+<period when_holiday="ignore_holiday" single_start="16:20"/>
+<period when_holiday="ignore_holiday" single_start="16:25"/>
+<period when_holiday="ignore_holiday" single_start="16:30"/>
+<period when_holiday="ignore_holiday" single_start="16:35"/>
+<period when_holiday="ignore_holiday" single_start="16:40"/>
+<period when_holiday="ignore_holiday" single_start="16:45"/>
+<period when_holiday="ignore_holiday" single_start="16:50"/>
+<period when_holiday="ignore_holiday" single_start="16:55"/>
+<period when_holiday="ignore_holiday" single_start="17:00"/>
+<period when_holiday="ignore_holiday" single_start="17:05"/>
+<period when_holiday="ignore_holiday" single_start="17:10"/>
+<period when_holiday="ignore_holiday" single_start="17:15"/>
+<period when_holiday="ignore_holiday" single_start="17:20"/>
+<period when_holiday="ignore_holiday" single_start="17:25"/>
+<period when_holiday="ignore_holiday" single_start="17:30"/>
+<period when_holiday="ignore_holiday" single_start="17:35"/>
+<period when_holiday="ignore_holiday" single_start="17:40"/>
+<period when_holiday="ignore_holiday" single_start="17:45"/>
+<period when_holiday="ignore_holiday" single_start="17:50"/>
+<period when_holiday="ignore_holiday" single_start="17:55"/>
+<period when_holiday="ignore_holiday" single_start="18:00"/>
+<period when_holiday="ignore_holiday" single_start="18:05"/>
+<period when_holiday="ignore_holiday" single_start="18:10"/>
+<period when_holiday="ignore_holiday" single_start="18:15"/>
+<period when_holiday="ignore_holiday" single_start="18:20"/>
+<period when_holiday="ignore_holiday" single_start="18:25"/>
+<period when_holiday="ignore_holiday" single_start="18:30"/>
+<period when_holiday="ignore_holiday" single_start="18:35"/>
+<period when_holiday="ignore_holiday" single_start="18:40"/>
+<period when_holiday="ignore_holiday" single_start="18:45"/>
+<period when_holiday="ignore_holiday" single_start="18:50"/>
+<period when_holiday="ignore_holiday" single_start="18:55"/>
+<period when_holiday="ignore_holiday" single_start="19:00"/>
+
+			</day>
+			<day day="3">
+			<period when_holiday="ignore_holiday" single_start="8:00"/>
+<period when_holiday="ignore_holiday" single_start="8:05"/>
+<period when_holiday="ignore_holiday" single_start="8:10"/>
+<period when_holiday="ignore_holiday" single_start="8:15"/>
+<period when_holiday="ignore_holiday" single_start="8:20"/>
+<period when_holiday="ignore_holiday" single_start="8:25"/>
+<period when_holiday="ignore_holiday" single_start="8:30"/>
+<period when_holiday="ignore_holiday" single_start="8:35"/>
+<period when_holiday="ignore_holiday" single_start="8:40"/>
+<period when_holiday="ignore_holiday" single_start="8:45"/>
+<period when_holiday="ignore_holiday" single_start="8:50"/>
+<period when_holiday="ignore_holiday" single_start="8:55"/>
+<period when_holiday="ignore_holiday" single_start="9:00"/>
+<period when_holiday="ignore_holiday" single_start="9:05"/>
+<period when_holiday="ignore_holiday" single_start="9:10"/>
+<period when_holiday="ignore_holiday" single_start="9:15"/>
+<period when_holiday="ignore_holiday" single_start="9:20"/>
+<period when_holiday="ignore_holiday" single_start="9:25"/>
+<period when_holiday="ignore_holiday" single_start="9:30"/>
+<period when_holiday="ignore_holiday" single_start="9:35"/>
+<period when_holiday="ignore_holiday" single_start="9:40"/>
+<period when_holiday="ignore_holiday" single_start="9:45"/>
+<period when_holiday="ignore_holiday" single_start="9:50"/>
+<period when_holiday="ignore_holiday" single_start="9:55"/>
+<period when_holiday="ignore_holiday" single_start="10:00"/>
+<period when_holiday="ignore_holiday" single_start="10:05"/>
+<period when_holiday="ignore_holiday" single_start="10:10"/>
+<period when_holiday="ignore_holiday" single_start="10:15"/>
+<period when_holiday="ignore_holiday" single_start="10:20"/>
+<period when_holiday="ignore_holiday" single_start="10:25"/>
+<period when_holiday="ignore_holiday" single_start="10:30"/>
+<period when_holiday="ignore_holiday" single_start="10:35"/>
+<period when_holiday="ignore_holiday" single_start="10:40"/>
+<period when_holiday="ignore_holiday" single_start="10:45"/>
+<period when_holiday="ignore_holiday" single_start="10:50"/>
+<period when_holiday="ignore_holiday" single_start="10:55"/>
+<period when_holiday="ignore_holiday" single_start="11:00"/>
+<period when_holiday="ignore_holiday" single_start="11:05"/>
+<period when_holiday="ignore_holiday" single_start="11:10"/>
+<period when_holiday="ignore_holiday" single_start="11:15"/>
+<period when_holiday="ignore_holiday" single_start="11:20"/>
+<period when_holiday="ignore_holiday" single_start="11:25"/>
+<period when_holiday="ignore_holiday" single_start="11:30"/>
+<period when_holiday="ignore_holiday" single_start="11:35"/>
+<period when_holiday="ignore_holiday" single_start="11:40"/>
+<period when_holiday="ignore_holiday" single_start="11:45"/>
+<period when_holiday="ignore_holiday" single_start="11:50"/>
+<period when_holiday="ignore_holiday" single_start="11:55"/>
+<period when_holiday="ignore_holiday" single_start="12:00"/>
+<period when_holiday="ignore_holiday" single_start="12:05"/>
+<period when_holiday="ignore_holiday" single_start="12:10"/>
+<period when_holiday="ignore_holiday" single_start="12:15"/>
+<period when_holiday="ignore_holiday" single_start="12:20"/>
+<period when_holiday="ignore_holiday" single_start="12:25"/>
+<period when_holiday="ignore_holiday" single_start="12:30"/>
+<period when_holiday="ignore_holiday" single_start="12:35"/>
+<period when_holiday="ignore_holiday" single_start="12:40"/>
+<period when_holiday="ignore_holiday" single_start="12:45"/>
+<period when_holiday="ignore_holiday" single_start="12:50"/>
+<period when_holiday="ignore_holiday" single_start="12:55"/>
+<period when_holiday="ignore_holiday" single_start="13:00"/>
+<period when_holiday="ignore_holiday" single_start="13:05"/>
+<period when_holiday="ignore_holiday" single_start="13:10"/>
+<period when_holiday="ignore_holiday" single_start="13:15"/>
+<period when_holiday="ignore_holiday" single_start="13:20"/>
+<period when_holiday="ignore_holiday" single_start="13:25"/>
+<period when_holiday="ignore_holiday" single_start="13:30"/>
+<period when_holiday="ignore_holiday" single_start="13:35"/>
+<period when_holiday="ignore_holiday" single_start="13:40"/>
+<period when_holiday="ignore_holiday" single_start="13:45"/>
+<period when_holiday="ignore_holiday" single_start="13:50"/>
+<period when_holiday="ignore_holiday" single_start="13:55"/>
+<period when_holiday="ignore_holiday" single_start="14:00"/>
+<period when_holiday="ignore_holiday" single_start="14:05"/>
+<period when_holiday="ignore_holiday" single_start="14:10"/>
+<period when_holiday="ignore_holiday" single_start="14:15"/>
+<period when_holiday="ignore_holiday" single_start="14:20"/>
+<period when_holiday="ignore_holiday" single_start="14:25"/>
+<period when_holiday="ignore_holiday" single_start="14:30"/>
+<period when_holiday="ignore_holiday" single_start="14:35"/>
+<period when_holiday="ignore_holiday" single_start="14:40"/>
+<period when_holiday="ignore_holiday" single_start="14:45"/>
+<period when_holiday="ignore_holiday" single_start="14:50"/>
+<period when_holiday="ignore_holiday" single_start="14:55"/>
+<period when_holiday="ignore_holiday" single_start="15:00"/>
+<period when_holiday="ignore_holiday" single_start="15:05"/>
+<period when_holiday="ignore_holiday" single_start="15:10"/>
+<period when_holiday="ignore_holiday" single_start="15:15"/>
+<period when_holiday="ignore_holiday" single_start="15:20"/>
+<period when_holiday="ignore_holiday" single_start="15:25"/>
+<period when_holiday="ignore_holiday" single_start="15:30"/>
+<period when_holiday="ignore_holiday" single_start="15:35"/>
+<period when_holiday="ignore_holiday" single_start="15:40"/>
+<period when_holiday="ignore_holiday" single_start="15:45"/>
+<period when_holiday="ignore_holiday" single_start="15:50"/>
+<period when_holiday="ignore_holiday" single_start="15:55"/>
+<period when_holiday="ignore_holiday" single_start="16:00"/>
+<period when_holiday="ignore_holiday" single_start="16:05"/>
+<period when_holiday="ignore_holiday" single_start="16:10"/>
+<period when_holiday="ignore_holiday" single_start="16:15"/>
+<period when_holiday="ignore_holiday" single_start="16:20"/>
+<period when_holiday="ignore_holiday" single_start="16:25"/>
+<period when_holiday="ignore_holiday" single_start="16:30"/>
+<period when_holiday="ignore_holiday" single_start="16:35"/>
+<period when_holiday="ignore_holiday" single_start="16:40"/>
+<period when_holiday="ignore_holiday" single_start="16:45"/>
+<period when_holiday="ignore_holiday" single_start="16:50"/>
+<period when_holiday="ignore_holiday" single_start="16:55"/>
+<period when_holiday="ignore_holiday" single_start="17:00"/>
+<period when_holiday="ignore_holiday" single_start="17:05"/>
+<period when_holiday="ignore_holiday" single_start="17:10"/>
+<period when_holiday="ignore_holiday" single_start="17:15"/>
+<period when_holiday="ignore_holiday" single_start="17:20"/>
+<period when_holiday="ignore_holiday" single_start="17:25"/>
+<period when_holiday="ignore_holiday" single_start="17:30"/>
+<period when_holiday="ignore_holiday" single_start="17:35"/>
+<period when_holiday="ignore_holiday" single_start="17:40"/>
+<period when_holiday="ignore_holiday" single_start="17:45"/>
+<period when_holiday="ignore_holiday" single_start="17:50"/>
+<period when_holiday="ignore_holiday" single_start="17:55"/>
+<period when_holiday="ignore_holiday" single_start="18:00"/>
+<period when_holiday="ignore_holiday" single_start="18:05"/>
+<period when_holiday="ignore_holiday" single_start="18:10"/>
+<period when_holiday="ignore_holiday" single_start="18:15"/>
+<period when_holiday="ignore_holiday" single_start="18:20"/>
+<period when_holiday="ignore_holiday" single_start="18:25"/>
+<period when_holiday="ignore_holiday" single_start="18:30"/>
+<period when_holiday="ignore_holiday" single_start="18:35"/>
+<period when_holiday="ignore_holiday" single_start="18:40"/>
+<period when_holiday="ignore_holiday" single_start="18:45"/>
+<period when_holiday="ignore_holiday" single_start="18:50"/>
+<period when_holiday="ignore_holiday" single_start="18:55"/>
+<period when_holiday="ignore_holiday" single_start="19:00"/>
+
+			</day>
+			<day day="4">
+				<period when_holiday="ignore_holiday" single_start="8:00"/>
+<period when_holiday="ignore_holiday" single_start="8:05"/>
+<period when_holiday="ignore_holiday" single_start="8:10"/>
+<period when_holiday="ignore_holiday" single_start="8:15"/>
+<period when_holiday="ignore_holiday" single_start="8:20"/>
+<period when_holiday="ignore_holiday" single_start="8:25"/>
+<period when_holiday="ignore_holiday" single_start="8:30"/>
+<period when_holiday="ignore_holiday" single_start="8:35"/>
+<period when_holiday="ignore_holiday" single_start="8:40"/>
+<period when_holiday="ignore_holiday" single_start="8:45"/>
+<period when_holiday="ignore_holiday" single_start="8:50"/>
+<period when_holiday="ignore_holiday" single_start="8:55"/>
+<period when_holiday="ignore_holiday" single_start="9:00"/>
+<period when_holiday="ignore_holiday" single_start="9:05"/>
+<period when_holiday="ignore_holiday" single_start="9:10"/>
+<period when_holiday="ignore_holiday" single_start="9:15"/>
+<period when_holiday="ignore_holiday" single_start="9:20"/>
+<period when_holiday="ignore_holiday" single_start="9:25"/>
+<period when_holiday="ignore_holiday" single_start="9:30"/>
+<period when_holiday="ignore_holiday" single_start="9:35"/>
+<period when_holiday="ignore_holiday" single_start="9:40"/>
+<period when_holiday="ignore_holiday" single_start="9:45"/>
+<period when_holiday="ignore_holiday" single_start="9:50"/>
+<period when_holiday="ignore_holiday" single_start="9:55"/>
+<period when_holiday="ignore_holiday" single_start="10:00"/>
+<period when_holiday="ignore_holiday" single_start="10:05"/>
+<period when_holiday="ignore_holiday" single_start="10:10"/>
+<period when_holiday="ignore_holiday" single_start="10:15"/>
+<period when_holiday="ignore_holiday" single_start="10:20"/>
+<period when_holiday="ignore_holiday" single_start="10:25"/>
+<period when_holiday="ignore_holiday" single_start="10:30"/>
+<period when_holiday="ignore_holiday" single_start="10:35"/>
+<period when_holiday="ignore_holiday" single_start="10:40"/>
+<period when_holiday="ignore_holiday" single_start="10:45"/>
+<period when_holiday="ignore_holiday" single_start="10:50"/>
+<period when_holiday="ignore_holiday" single_start="10:55"/>
+<period when_holiday="ignore_holiday" single_start="11:00"/>
+<period when_holiday="ignore_holiday" single_start="11:05"/>
+<period when_holiday="ignore_holiday" single_start="11:10"/>
+<period when_holiday="ignore_holiday" single_start="11:15"/>
+<period when_holiday="ignore_holiday" single_start="11:20"/>
+<period when_holiday="ignore_holiday" single_start="11:25"/>
+<period when_holiday="ignore_holiday" single_start="11:30"/>
+<period when_holiday="ignore_holiday" single_start="11:35"/>
+<period when_holiday="ignore_holiday" single_start="11:40"/>
+<period when_holiday="ignore_holiday" single_start="11:45"/>
+<period when_holiday="ignore_holiday" single_start="11:50"/>
+<period when_holiday="ignore_holiday" single_start="11:55"/>
+<period when_holiday="ignore_holiday" single_start="12:00"/>
+<period when_holiday="ignore_holiday" single_start="12:05"/>
+<period when_holiday="ignore_holiday" single_start="12:10"/>
+<period when_holiday="ignore_holiday" single_start="12:15"/>
+<period when_holiday="ignore_holiday" single_start="12:20"/>
+<period when_holiday="ignore_holiday" single_start="12:25"/>
+<period when_holiday="ignore_holiday" single_start="12:30"/>
+<period when_holiday="ignore_holiday" single_start="12:35"/>
+<period when_holiday="ignore_holiday" single_start="12:40"/>
+<period when_holiday="ignore_holiday" single_start="12:45"/>
+<period when_holiday="ignore_holiday" single_start="12:50"/>
+<period when_holiday="ignore_holiday" single_start="12:55"/>
+<period when_holiday="ignore_holiday" single_start="13:00"/>
+<period when_holiday="ignore_holiday" single_start="13:05"/>
+<period when_holiday="ignore_holiday" single_start="13:10"/>
+<period when_holiday="ignore_holiday" single_start="13:15"/>
+<period when_holiday="ignore_holiday" single_start="13:20"/>
+<period when_holiday="ignore_holiday" single_start="13:25"/>
+<period when_holiday="ignore_holiday" single_start="13:30"/>
+<period when_holiday="ignore_holiday" single_start="13:35"/>
+<period when_holiday="ignore_holiday" single_start="13:40"/>
+<period when_holiday="ignore_holiday" single_start="13:45"/>
+<period when_holiday="ignore_holiday" single_start="13:50"/>
+<period when_holiday="ignore_holiday" single_start="13:55"/>
+<period when_holiday="ignore_holiday" single_start="14:00"/>
+<period when_holiday="ignore_holiday" single_start="14:05"/>
+<period when_holiday="ignore_holiday" single_start="14:10"/>
+<period when_holiday="ignore_holiday" single_start="14:15"/>
+<period when_holiday="ignore_holiday" single_start="14:20"/>
+<period when_holiday="ignore_holiday" single_start="14:25"/>
+<period when_holiday="ignore_holiday" single_start="14:30"/>
+<period when_holiday="ignore_holiday" single_start="14:35"/>
+<period when_holiday="ignore_holiday" single_start="14:40"/>
+<period when_holiday="ignore_holiday" single_start="14:45"/>
+<period when_holiday="ignore_holiday" single_start="14:50"/>
+<period when_holiday="ignore_holiday" single_start="14:55"/>
+<period when_holiday="ignore_holiday" single_start="15:00"/>
+<period when_holiday="ignore_holiday" single_start="15:05"/>
+<period when_holiday="ignore_holiday" single_start="15:10"/>
+<period when_holiday="ignore_holiday" single_start="15:15"/>
+<period when_holiday="ignore_holiday" single_start="15:20"/>
+<period when_holiday="ignore_holiday" single_start="15:25"/>
+<period when_holiday="ignore_holiday" single_start="15:30"/>
+<period when_holiday="ignore_holiday" single_start="15:35"/>
+<period when_holiday="ignore_holiday" single_start="15:40"/>
+<period when_holiday="ignore_holiday" single_start="15:45"/>
+<period when_holiday="ignore_holiday" single_start="15:50"/>
+<period when_holiday="ignore_holiday" single_start="15:55"/>
+<period when_holiday="ignore_holiday" single_start="16:00"/>
+<period when_holiday="ignore_holiday" single_start="16:05"/>
+<period when_holiday="ignore_holiday" single_start="16:10"/>
+<period when_holiday="ignore_holiday" single_start="16:15"/>
+<period when_holiday="ignore_holiday" single_start="16:20"/>
+<period when_holiday="ignore_holiday" single_start="16:25"/>
+<period when_holiday="ignore_holiday" single_start="16:30"/>
+<period when_holiday="ignore_holiday" single_start="16:35"/>
+<period when_holiday="ignore_holiday" single_start="16:40"/>
+<period when_holiday="ignore_holiday" single_start="16:45"/>
+<period when_holiday="ignore_holiday" single_start="16:50"/>
+<period when_holiday="ignore_holiday" single_start="16:55"/>
+<period when_holiday="ignore_holiday" single_start="17:00"/>
+<period when_holiday="ignore_holiday" single_start="17:05"/>
+<period when_holiday="ignore_holiday" single_start="17:10"/>
+<period when_holiday="ignore_holiday" single_start="17:15"/>
+<period when_holiday="ignore_holiday" single_start="17:20"/>
+<period when_holiday="ignore_holiday" single_start="17:25"/>
+<period when_holiday="ignore_holiday" single_start="17:30"/>
+<period when_holiday="ignore_holiday" single_start="17:35"/>
+<period when_holiday="ignore_holiday" single_start="17:40"/>
+<period when_holiday="ignore_holiday" single_start="17:45"/>
+<period when_holiday="ignore_holiday" single_start="17:50"/>
+<period when_holiday="ignore_holiday" single_start="17:55"/>
+<period when_holiday="ignore_holiday" single_start="18:00"/>
+<period when_holiday="ignore_holiday" single_start="18:05"/>
+<period when_holiday="ignore_holiday" single_start="18:10"/>
+<period when_holiday="ignore_holiday" single_start="18:15"/>
+<period when_holiday="ignore_holiday" single_start="18:20"/>
+<period when_holiday="ignore_holiday" single_start="18:25"/>
+<period when_holiday="ignore_holiday" single_start="18:30"/>
+<period when_holiday="ignore_holiday" single_start="18:35"/>
+<period when_holiday="ignore_holiday" single_start="18:40"/>
+<period when_holiday="ignore_holiday" single_start="18:45"/>
+<period when_holiday="ignore_holiday" single_start="18:50"/>
+<period when_holiday="ignore_holiday" single_start="18:55"/>
+<period when_holiday="ignore_holiday" single_start="19:00"/>
+
+			</day>
+			<day day="5">
+				<period when_holiday="ignore_holiday" single_start="8:00"/>
+<period when_holiday="ignore_holiday" single_start="8:05"/>
+<period when_holiday="ignore_holiday" single_start="8:10"/>
+<period when_holiday="ignore_holiday" single_start="8:15"/>
+<period when_holiday="ignore_holiday" single_start="8:20"/>
+<period when_holiday="ignore_holiday" single_start="8:25"/>
+<period when_holiday="ignore_holiday" single_start="8:30"/>
+<period when_holiday="ignore_holiday" single_start="8:35"/>
+<period when_holiday="ignore_holiday" single_start="8:40"/>
+<period when_holiday="ignore_holiday" single_start="8:45"/>
+<period when_holiday="ignore_holiday" single_start="8:50"/>
+<period when_holiday="ignore_holiday" single_start="8:55"/>
+<period when_holiday="ignore_holiday" single_start="9:00"/>
+<period when_holiday="ignore_holiday" single_start="9:05"/>
+<period when_holiday="ignore_holiday" single_start="9:10"/>
+<period when_holiday="ignore_holiday" single_start="9:15"/>
+<period when_holiday="ignore_holiday" single_start="9:20"/>
+<period when_holiday="ignore_holiday" single_start="9:25"/>
+<period when_holiday="ignore_holiday" single_start="9:30"/>
+<period when_holiday="ignore_holiday" single_start="9:35"/>
+<period when_holiday="ignore_holiday" single_start="9:40"/>
+<period when_holiday="ignore_holiday" single_start="9:45"/>
+<period when_holiday="ignore_holiday" single_start="9:50"/>
+<period when_holiday="ignore_holiday" single_start="9:55"/>
+<period when_holiday="ignore_holiday" single_start="10:00"/>
+<period when_holiday="ignore_holiday" single_start="10:05"/>
+<period when_holiday="ignore_holiday" single_start="10:10"/>
+<period when_holiday="ignore_holiday" single_start="10:15"/>
+<period when_holiday="ignore_holiday" single_start="10:20"/>
+<period when_holiday="ignore_holiday" single_start="10:25"/>
+<period when_holiday="ignore_holiday" single_start="10:30"/>
+<period when_holiday="ignore_holiday" single_start="10:35"/>
+<period when_holiday="ignore_holiday" single_start="10:40"/>
+<period when_holiday="ignore_holiday" single_start="10:45"/>
+<period when_holiday="ignore_holiday" single_start="10:50"/>
+<period when_holiday="ignore_holiday" single_start="10:55"/>
+<period when_holiday="ignore_holiday" single_start="11:00"/>
+<period when_holiday="ignore_holiday" single_start="11:05"/>
+<period when_holiday="ignore_holiday" single_start="11:10"/>
+<period when_holiday="ignore_holiday" single_start="11:15"/>
+<period when_holiday="ignore_holiday" single_start="11:20"/>
+<period when_holiday="ignore_holiday" single_start="11:25"/>
+<period when_holiday="ignore_holiday" single_start="11:30"/>
+<period when_holiday="ignore_holiday" single_start="11:35"/>
+<period when_holiday="ignore_holiday" single_start="11:40"/>
+<period when_holiday="ignore_holiday" single_start="11:45"/>
+<period when_holiday="ignore_holiday" single_start="11:50"/>
+<period when_holiday="ignore_holiday" single_start="11:55"/>
+<period when_holiday="ignore_holiday" single_start="12:00"/>
+<period when_holiday="ignore_holiday" single_start="12:05"/>
+<period when_holiday="ignore_holiday" single_start="12:10"/>
+<period when_holiday="ignore_holiday" single_start="12:15"/>
+<period when_holiday="ignore_holiday" single_start="12:20"/>
+<period when_holiday="ignore_holiday" single_start="12:25"/>
+<period when_holiday="ignore_holiday" single_start="12:30"/>
+<period when_holiday="ignore_holiday" single_start="12:35"/>
+<period when_holiday="ignore_holiday" single_start="12:40"/>
+<period when_holiday="ignore_holiday" single_start="12:45"/>
+<period when_holiday="ignore_holiday" single_start="12:50"/>
+<period when_holiday="ignore_holiday" single_start="12:55"/>
+<period when_holiday="ignore_holiday" single_start="13:00"/>
+<period when_holiday="ignore_holiday" single_start="13:05"/>
+<period when_holiday="ignore_holiday" single_start="13:10"/>
+<period when_holiday="ignore_holiday" single_start="13:15"/>
+<period when_holiday="ignore_holiday" single_start="13:20"/>
+<period when_holiday="ignore_holiday" single_start="13:25"/>
+<period when_holiday="ignore_holiday" single_start="13:30"/>
+<period when_holiday="ignore_holiday" single_start="13:35"/>
+<period when_holiday="ignore_holiday" single_start="13:40"/>
+<period when_holiday="ignore_holiday" single_start="13:45"/>
+<period when_holiday="ignore_holiday" single_start="13:50"/>
+<period when_holiday="ignore_holiday" single_start="13:55"/>
+<period when_holiday="ignore_holiday" single_start="14:00"/>
+<period when_holiday="ignore_holiday" single_start="14:05"/>
+<period when_holiday="ignore_holiday" single_start="14:10"/>
+<period when_holiday="ignore_holiday" single_start="14:15"/>
+<period when_holiday="ignore_holiday" single_start="14:20"/>
+<period when_holiday="ignore_holiday" single_start="14:25"/>
+<period when_holiday="ignore_holiday" single_start="14:30"/>
+<period when_holiday="ignore_holiday" single_start="14:35"/>
+<period when_holiday="ignore_holiday" single_start="14:40"/>
+<period when_holiday="ignore_holiday" single_start="14:45"/>
+<period when_holiday="ignore_holiday" single_start="14:50"/>
+<period when_holiday="ignore_holiday" single_start="14:55"/>
+<period when_holiday="ignore_holiday" single_start="15:00"/>
+<period when_holiday="ignore_holiday" single_start="15:05"/>
+<period when_holiday="ignore_holiday" single_start="15:10"/>
+<period when_holiday="ignore_holiday" single_start="15:15"/>
+<period when_holiday="ignore_holiday" single_start="15:20"/>
+<period when_holiday="ignore_holiday" single_start="15:25"/>
+<period when_holiday="ignore_holiday" single_start="15:30"/>
+<period when_holiday="ignore_holiday" single_start="15:35"/>
+<period when_holiday="ignore_holiday" single_start="15:40"/>
+<period when_holiday="ignore_holiday" single_start="15:45"/>
+<period when_holiday="ignore_holiday" single_start="15:50"/>
+<period when_holiday="ignore_holiday" single_start="15:55"/>
+<period when_holiday="ignore_holiday" single_start="16:00"/>
+<period when_holiday="ignore_holiday" single_start="16:05"/>
+<period when_holiday="ignore_holiday" single_start="16:10"/>
+<period when_holiday="ignore_holiday" single_start="16:15"/>
+<period when_holiday="ignore_holiday" single_start="16:20"/>
+<period when_holiday="ignore_holiday" single_start="16:25"/>
+<period when_holiday="ignore_holiday" single_start="16:30"/>
+<period when_holiday="ignore_holiday" single_start="16:35"/>
+<period when_holiday="ignore_holiday" single_start="16:40"/>
+<period when_holiday="ignore_holiday" single_start="16:45"/>
+<period when_holiday="ignore_holiday" single_start="16:50"/>
+<period when_holiday="ignore_holiday" single_start="16:55"/>
+<period when_holiday="ignore_holiday" single_start="17:00"/>
+<period when_holiday="ignore_holiday" single_start="17:05"/>
+<period when_holiday="ignore_holiday" single_start="17:10"/>
+<period when_holiday="ignore_holiday" single_start="17:15"/>
+<period when_holiday="ignore_holiday" single_start="17:20"/>
+<period when_holiday="ignore_holiday" single_start="17:25"/>
+<period when_holiday="ignore_holiday" single_start="17:30"/>
+<period when_holiday="ignore_holiday" single_start="17:35"/>
+<period when_holiday="ignore_holiday" single_start="17:40"/>
+<period when_holiday="ignore_holiday" single_start="17:45"/>
+<period when_holiday="ignore_holiday" single_start="17:50"/>
+<period when_holiday="ignore_holiday" single_start="17:55"/>
+<period when_holiday="ignore_holiday" single_start="18:00"/>
+<period when_holiday="ignore_holiday" single_start="18:05"/>
+<period when_holiday="ignore_holiday" single_start="18:10"/>
+<period when_holiday="ignore_holiday" single_start="18:15"/>
+<period when_holiday="ignore_holiday" single_start="18:20"/>
+<period when_holiday="ignore_holiday" single_start="18:25"/>
+<period when_holiday="ignore_holiday" single_start="18:30"/>
+<period when_holiday="ignore_holiday" single_start="18:35"/>
+<period when_holiday="ignore_holiday" single_start="18:40"/>
+<period when_holiday="ignore_holiday" single_start="18:45"/>
+<period when_holiday="ignore_holiday" single_start="18:50"/>
+<period when_holiday="ignore_holiday" single_start="18:55"/>
+<period when_holiday="ignore_holiday" single_start="19:00"/>
+
+			</day>
+		</weekdays>
+    </run_time>
+</job>

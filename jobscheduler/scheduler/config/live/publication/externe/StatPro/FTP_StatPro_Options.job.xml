@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Envoi -> StatPro des fichiers OPTIONS et OTC ( XML)" order="no" timeout="600">
+    <description>
+        <![CDATA[
+Connection et upload des fichiers d'alimentation de la base Risk de StatPro
+        ]]>
+    </description>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!S-log.txt&quot;"/>		  
+
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;script_SPA_OPTIONS.txt&quot;"/>		  
+		<variable name="INPUT_PATH1"
+				  value="\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OPTIONS"/>				  
+		  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle de la veille
+	-->
+	<script language="shell">
+	<![CDATA[
+	
+		  
+	  set mydate=%date:~0,2%%date:~3,2%%date:~6,4%
+
+	  rem IF "%SCHEDULER_PARAM_DATE%" == "JJMMAAAA" GOTO CONFIG_DATE_AUTO
+	  rem set mydate=%SCHEDULER_PARAM_DATE%
+
+	  :CONFIG_DATE_AUTO
+
+	  rem essai pour envoyer un fichier dispo 
+	  set compteur=0
+	  
+	  FOR /f "delims=" %%X in ('dir /b "%INPUT_PATH1%\*"^|findstr "\.xml$"') DO (
+	    echo Envoi de "%%X"
+		%SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter "%INPUT_PATH1%" "%%X"
+	    echo renommage de "%%X" 
+		MKDIR "%INPUT_PATH1%\ENVOI_%mydate%"
+		MOVE /Y "%INPUT_PATH1%\%%X" "%INPUT_PATH1%\ENVOI_%mydate%\%%X"
+		set /a compteur=%compteur%+1
+	  )	 
+
+  	  IF errorlevel 1 GOTO error1
+	 
+		echo Success - Nb de fichiers envoyés: %compteur%
+		goto end
+
+		:error1
+		echo Erreur sur le fichier %INPUT_PATH1%
+		goto end
+		
+		
+		
+		:end
+
+
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+                <period when_holiday="ignore_holiday"
+                        single_start="20:30"/>
+            </day>		
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="20:30"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="20:30"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="20:30"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="20:30"/>
+            </day>
+		</weekdays>
+    </run_time>
+</job>

@@ -1,0 +1,26 @@
+﻿#%1% : chemin du fichier source
+#%2% : nom du fichier source
+
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur STATPRO MILAN pour leur envoyer un fichier des options/OTC
+
+open StatProMilan
+
+#option transfer ascii
+
+cd /FederisToStatpro/Options/
+
+put "%1%\%2%" "%2%" 
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

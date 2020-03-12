@@ -1,0 +1,31 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Envoie des fichiers MULTI à STATPRO
+
+open StatPro
+
+#option transfer ascii
+
+cd /FederisToStatpro/Perf/
+
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.VAL"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.SEC"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.TRA"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.SRA"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.FDG"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.HOL"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.TAS"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\OMEGA\import auto\SPA\MULTI.DIS"
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<job_chain   orders_recoverable = "no">
+	   <job_chain_node state="Compute_MonitoringGroupe1"  job="Production_Compute_MonitoringGroupe"          next_state="Compute_MonitoringGroupe2"  error_state="error" /> 
+	   <job_chain_node state="Compute_MonitoringGroupe2"  job="Production_Compute_MonitoringGroupeDuration"  next_state="Compute_MonitoringGroupe3"  error_state="error" /> 
+       <job_chain_node state="Compute_MonitoringGroupe3"  job="Production_Compute_MonitoringGroupeComptable" next_state="Compute_MonitoringGroupe4"          error_state="error" />
+	   <job_chain_node state="Compute_MonitoringGroupe4"  job="Production_Compute_MonitoringGroupeRe" 		 next_state="Compute_MonitoringGroupe5"          error_state="error" />
+	   <job_chain_node state="Compute_MonitoringGroupe5"  job="Production_Compute_MonitoringGroupeSe" 		 next_state="Compute_ExpoPays1"          error_state="error" />
+	   
+	   <job_chain_node state="Compute_ExpoPays1"  job="Production_Compute_MonitoringExpoPays"                next_state="Compute_ExpoPays2"          error_state="error" />
+	   <job_chain_node state="Compute_ExpoPays2"  job="Production_Compute_MonitoringExpoPaysDuration"        next_state="Compute_ExpoPays3"          error_state="error" />
+	   <job_chain_node state="Compute_ExpoPays3"  job="Production_Compute_MonitoringExpoPaysComptable"       next_state="Compute_ExpoPays4"      error_state="error" />
+	   <job_chain_node state="Compute_ExpoPays4"  job="Production_Compute_MonitoringExpoPaysRe"       		 next_state="Compute_ExpoPays5"      error_state="error" />
+	   <job_chain_node state="Compute_ExpoPays5"  job="Production_Compute_MonitoringExpoPaysSe"      		 next_state="Compute_GrpEmetteurs1"      error_state="error" />
+	   
+	   <job_chain_node state="Compute_GrpEmetteurs1"  job="Production_Compute_MonitoringGrpEmetteurs"       next_state="Excel_MonitoringGroupe1"           error_state="error" />
+
+
+  	   <job_chain_node state="Excel_MonitoringGroupe1"   job="Production_Excel_MonitoringGroupe"        next_state="Excel_MonitoringGroupe2"  error_state="error" /> 
+	   <job_chain_node state="Excel_MonitoringGroupe2" job="Production_Excel_MonitoringGroupeDuration" 	next_state="Excel_MonitoringGroupe3"  error_state="error" /> 
+       <job_chain_node state="Excel_MonitoringGroupe3" job="Production_Excel_MonitoringGroupeComptable"	next_state="Excel_MonitoringGroupe4"          error_state="error" />
+	   <job_chain_node state="Excel_MonitoringGroupe4" job="Production_Excel_MonitoringGroupeRe"		next_state="Excel_MonitoringGroupe5"          error_state="error" />
+	   <job_chain_node state="Excel_MonitoringGroupe5" job="Production_Excel_MonitoringGroupeSe"		next_state="Excel_ExpoPays1"          error_state="error" />
+	   
+	   <job_chain_node state="Excel_ExpoPays1"  job="Production_Excel_MonitoringExpoPays"               next_state="Excel_ExpoPays2"          error_state="error" />
+	   <job_chain_node state="Excel_ExpoPays2"  job="Production_Excel_MonitoringExpoPaysDuration"       next_state="Excel_ExpoPays3"          error_state="error" />
+	   <job_chain_node state="Excel_ExpoPays3"  job="Production_Excel_MonitoringExpoPaysComptable"     	next_state="Excel_ExpoPays4"      error_state="error" />
+	   <job_chain_node state="Excel_ExpoPays4"  job="Production_Excel_MonitoringExpoPaysRe"     		next_state="Excel_ExpoPays5"      error_state="error" />
+	   <job_chain_node state="Excel_ExpoPays5"  job="Production_Excel_MonitoringExpoPaysSe"     		next_state="Excel_ExpoPays6"      error_state="error" />
+   	   <job_chain_node state="Excel_ExpoPays6"  job="Production_Excel_MonitoringExpoPaysPIIGS"     		next_state="Excel_GrpEmetteurs1"      error_state="error" />
+	   
+	   
+	   <!--job_chain_node state="Excel_ExpoPays4"  job="Production_Excel_MonitoringExpoPaysPIIGS"           next_state="Excel_GrpEmetteurs1"      error_state="error" /-->
+	   
+	   <job_chain_node state="Excel_GrpEmetteurs1"  job="Production_Excel_MonitoringGrpEmetteurs"       next_state="success"           error_state="error" />
+
+	<job_chain_node state       = "success"/>
+    <job_chain_node state       = "error"/>
+</job_chain>

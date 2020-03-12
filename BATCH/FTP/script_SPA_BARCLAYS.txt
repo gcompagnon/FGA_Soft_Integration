@@ -1,0 +1,27 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open StatPro
+
+#option transfer ascii
+
+cd /FederisToStatpro/Indices/
+
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\INDICE\BARCLAYS\Import Barclays.RNP"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\INDICE\BARCLAYS\Import Barclays.SEC"
+put "\\vill1\partage\,FGA Systèmes\STATPRO\ALIMENTATION\INDICE\BARCLAYS\Import Barclays.INA"
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

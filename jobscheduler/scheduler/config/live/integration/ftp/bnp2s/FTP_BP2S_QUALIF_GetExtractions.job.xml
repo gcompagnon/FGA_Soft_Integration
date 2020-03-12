@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Récupération des Opérations (swift OST..) chez BP2S" order="no">
+    <description>
+        <![CDATA[
+Connection et get du fichier *.VFT00585
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+    <params>
+	  <param name = "date" value= "AAAAMMJJ"/>
+	</params>
+	
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!S-GetExtractions-log.txt&quot;"/>		  
+
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;script_BP2S_SFTP_QUALIF_Get_Extractions.txt&quot;"/>		  
+		<variable name="OUTPUT_FILE_PATH"
+				  value="\\vill1\Partage\,FGA Systèmes\SCD\IMPLEMENTATION\5 - TRANSACTIONS RAPPRO\BP2S\retour"/>
+		<variable name="FILE"
+				  value="&quot;*.VFT00585&quot;"/>
+    </environment>
+	<script language="shell">
+	<![CDATA[
+	@echo off
+	set mydate=%date:~6,4%%date:~3,2%%date:~0,2%
+
+	  IF "%SCHEDULER_PARAM_DATE%" == "AAAAMMJJ" GOTO CONFIG_DATE_AUTO
+	  set mydate=%SCHEDULER_PARAM_DATE%
+
+	  :CONFIG_DATE_AUTO
+
+  	  MKDIR "%OUTPUT_FILE_PATH%\RETOUR_%mydate%_QUALIF"
+
+	  %SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter %FILE% "%OUTPUT_FILE_PATH%\RETOUR_%mydate%_QUALIF"
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		echo OK sur la date %date% pour 
+		dir %OUTPUT_FILE_PATH%\RETOUR_%mydate%_QUALIF\%FILE% /b/a-d | find /v /c "::"
+		echo  fichiers 
+		
+		goto end
+
+		:error
+		echo Error!
+
+		:end
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:05"/>
+                <period when_holiday="ignore_holiday"
+                        single_start="18:05"/>						
+            </day>		
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:05"/>
+                <period when_holiday="ignore_holiday"
+                        single_start="18:05"/>						
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:05"/>
+                <period when_holiday="ignore_holiday"
+                        single_start="18:05"/>						
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:05"/>
+                <period when_holiday="ignore_holiday"
+                        single_start="18:05"/>						
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="09:05"/>
+                <period when_holiday="ignore_holiday"
+                        single_start="18:05"/>						
+            </day>
+		</weekdays>
+    </run_time>
+</job>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<job title = "Extr.FichierBondForward pour BP2S">
+    <settings>
+        <mail_on_error><![CDATA[yes]]></mail_on_error>
+    </settings>
+
+<description>
+ extraction des prix OTC (Bond Forward) au format BP2S pour transmission Tropic
+</description>
+
+      <process file="\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe"
+  param="-nogui -sql=$SQL -ini=$INI -xls=$XLS -bp2s=$BP2S">
+    <environment>
+      <variable name="SQL"
+				value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\MIDDLE_FLUX\Positions_OTCBondForward.sql&quot;"/>
+      <variable name="BP2S"
+				value="&quot;\\vill1\Partage\,FGA Middle office\Gestion_collateral\Envoi_fichiers_BP2S\FDR-OTCTrade-YYYYMMDD.txt&quot;"/>
+      <variable name="XLS"
+				value="&quot;\\vill1\Partage\,FGA Middle office\Gestion_collateral\Envoi_fichiers_BP2S\FDR-OTCTrade-YYYYMMDD.xls&quot;"/>
+      <variable name="INI"
+                value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+    </environment>
+  </process>
+<!--start_when_directory_changed directory="\\vill1\Partage\TQA\TOTO"  regex="[.]*\.txt"/-->
+  <run_time let_run="yes">
+    <period single_start="17:15"/>
+	<period single_start="17:30"/>
+  </run_time>
+  
+</job>

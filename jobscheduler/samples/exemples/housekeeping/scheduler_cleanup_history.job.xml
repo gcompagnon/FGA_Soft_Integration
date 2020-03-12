@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<job title = "Compress log entries in Job Scheduler history">
+
+    <description>
+       <include file = "jobs/JobSchedulerCleanupHistory.xml"/>
+    </description>
+    
+    <params>
+      <!-- reduce log files of history entries to the given log level -->
+      <!--<param name = "cleanup_history_log_level" value = "0"/>-->
+      <!-- chose history entries in the given interval of days -->
+      <!--<param name = "cleanup_history_interval"  value = "3"/>-->
+    
+      <!-- alternatively give the start date for cleanup of log files -->
+      <!--<param name = "cleanup_history_date_from" value = "2004-03-22"/>-->
+      <!-- alternatively give the end date for cleanup of log files -->
+      <!--<param name = "cleanup_history_date_to"   value = "2004-11-04"/>-->
+    </params>
+    
+    <script language      = "java"
+            java_class    = "sos.scheduler.job.JobSchedulerCleanupHistory"/>
+    
+    <!-- cleanup history entries every day of the week at the given hour -->
+    <!--
+    <run_time let_run = "yes"
+              begin   = "00:00"
+              end     = "24:00">
+       <period single_start = "01:00"/>
+    </run_time>
+    -->
+
+</job>

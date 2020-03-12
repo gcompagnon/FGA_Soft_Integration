@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Extraction en fichier CSV des donnees Inventaires FGA pour JUMP" order="no">
+    <description>
+        <![CDATA[
+execute une extraction/publication sur la base PTF_FGA  puis produit un fichier Csv au format JUMP
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "dateInventaire" value= "JJ/MM/AAAA"/>
+	  <!--param name = "NivTransparence" value= ""/-->
+	</params>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+        <variable name="SQL"
+				  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\REPORTING\EXTRACTION_JUMP\Inventaire_Trans_JUMP.sql&quot;"/>
+<!-- la requete qui fournit les valeurs du parametre @Compte ainsi que pour les noms de fichiers, une valeur qui remplace 'Compte'-->
+    	<variable name="PARAMSQL_SCRIPT"
+				  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\REPORTING\EXTRACTION_JUMP\Liste_Comptes_JUMP.sql&quot;"/>
+
+        <variable name="OUTPUT_PATH"
+                  value="\\vill1\Partage\,FGA Systèmes\JUMP\Alimentations\Inventaires"/>
+<!-- le nom de chaque fichier csv correspondant à un retour de select (si il n y a qu un select dans la requete SQL, il n y a qu un fichier )-->
+		<variable name="CSV_FILES"
+                  value="-#names=Compte_T_inventaire.csv"/>			  
+				  
+        <variable name="INI"
+                  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>			  
+
+		<variable name="FGA_AUTOMATE_PATH" 
+		          value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est prise du SQL (la derniere valorisation disponible)
+	-->
+	<script language="shell">
+	<![CDATA[
+	  rem la date est mise au format YYYYMMDD pour faire un répertoire
+	  set PREFIXE_DESTINATION=%SCHEDULER_PARAM_DATEINVENTAIRE:~6,4%%SCHEDULER_PARAM_DATEINVENTAIRE:~3,2%%SCHEDULER_PARAM_DATEINVENTAIRE:~0,2%
+
+  	  IF "%SCHEDULER_PARAM_DATEINVENTAIRE%" == "JJMMAAAA" GOTO FIN
+
+	  mkdir "%OUTPUT_PATH%\%PREFIXE_DESTINATION%"
+	  %FGA_AUTOMATE_PATH% -nogui -@dateInventaire='%SCHEDULER_PARAM_DATEINVENTAIRE%' -@niveau_Trans=5 -csv="%OUTPUT_PATH%\%PREFIXE_DESTINATION%" %CSV_FILES% -datastore=FGA_PROD -paramsql=%PARAMSQL_SCRIPT% -sql=%SQL% -ini=%INI% %*
+	  
+	  :FIN
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <!--run_time let_run="yes">
+        <weekdays>
+            <day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="17:00"/>
+            </day>
+        </weekdays>
+    </run_time-->
+</job>

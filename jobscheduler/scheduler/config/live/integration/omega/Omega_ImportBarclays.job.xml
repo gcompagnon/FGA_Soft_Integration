@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Import fichier Barclays dans Omega" order="no" enabled="no">
+    <description>
+        <![CDATA[
+
+        ]]>
+    </description>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<params>
+	  <param name = "utilisateur" value= "KRG"/>
+	  <param name = "fichier" value= "COURS_BARCLAYS"/>
+	</params>
+
+	<environment>
+
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\AUTOIT&quot;"/>		  
+	
+		<variable name="SCRIPT"
+				  value="&quot;OMEGA_IMPORT_FICHIER.exe&quot;"/>		  
+
+		<variable name="LOG_PATH"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\QUOTIDIEN\Log&quot;"/>	
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle de la veille
+	-->
+	<script language="shell">
+	<![CDATA[	
+	 %SCRIPT_PATH%\%SCRIPT%  -l:%LOG_PATH% -f:%SCHEDULER_PARAM_FICHIER% -u:%SCHEDULER_PARAM_UTILISATEUR%
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		goto end
+
+		:error
+		echo Error!
+
+		:end
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+                <period when_holiday="ignore_holiday"
+                        single_start="07:30"/>            
+    </run_time>
+</job>

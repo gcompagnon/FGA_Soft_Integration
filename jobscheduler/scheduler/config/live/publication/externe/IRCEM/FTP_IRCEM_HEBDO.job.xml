@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Transferts IRCEM" order="no">
+    <description>
+        <![CDATA[
+Transferts IRCEM
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des parametres
+	-->
+	<params>
+	  <param name = "date" value= "JJMMAAAA"/>
+	</params>
+
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env systeme -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!S-log.txt&quot;"/>		  
+		<variable name="SCRIPT_PATH"
+				  value="C:\FGA_SOFT_INTEGRATION\BATCH\FTP"/>		  	
+		<variable name="SCRIPT"
+				  value="script_IRCEM.txt"/>		  
+		<variable name="INPUT_PATH1"
+				  value="\\mepinf039\PARTAGE\Portefeuille\IRCEM\Ircem_transfert_comptabilite"/>
+
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle du jour
+	-->
+	<script language="shell">
+	<![CDATA[	
+	  
+	  rem DEBUG
+	  rem set SCHEDULER_PARAM_DATE=11082014
+	  
+	  set mydate=%date:~0,2%%date:~3,2%%date:~6,4%
+
+	  IF "%SCHEDULER_PARAM_DATE%" == "JJMMAAAA" GOTO CONFIG_DATE_AUTO
+	  set mydate=%SCHEDULER_PARAM_DATE%
+
+	  :CONFIG_DATE_AUTO
+
+	  rem essai pour envoyer un fichier dispo 1 fois dans le mois
+	  set compteur=0
+	  
+	  FOR /f "delims=" %%X in ('dir /b "%INPUT_PATH1%\*"^|findstr "\.txt$ \.pdf$  \.xls$ \.xlsx$ \.doc$ \.docx$"') DO (
+	    echo Envoi de "%%X"
+		%SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% /parameter "%INPUT_PATH1%" "%%X"
+	    echo renommage de "%%X" 
+		MKDIR %INPUT_PATH1%\ENVOI_%mydate%
+		MOVE /Y "%INPUT_PATH1%\%%X" "%INPUT_PATH1%\ENVOI_%mydate%\%%X"
+		set /a compteur=%compteur%+1
+	  )	 
+
+  	  IF errorlevel 1 GOTO error1
+	 
+		echo Success - Nb de fichiers envoyés: %compteur%
+		goto end
+
+		:error1
+		echo Erreur sur le fichier %INPUT_PATH1%
+		goto end
+		
+		
+		
+		:end
+    ]]>
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+                <period when_holiday="ignore_holiday"
+                        single_start="12:00"/>
+            </day>
+
+		</weekdays>
+    </run_time>
+	    <!--run_time>
+		 <period begin="12:00" end="18:00" absolute_repeat ="00:30"/>
+		</run_time-->
+</job>

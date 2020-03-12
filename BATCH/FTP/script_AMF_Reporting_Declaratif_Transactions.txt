@@ -1,0 +1,33 @@
+﻿#%1% : chemin du fichier source
+#%2% : nom du fichier source
+#%3% : nom du fichier en destination
+ 
+# Disable overwrite confirmations
+option confirm off
+# all prompts are automatically answered negatively
+option batch abort
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open AMF
+
+option transfer ascii
+
+cd /
+
+put "%1%\%2%" "%3%" 
+
+# pour les tests: le fichier est test_FEDERIGA01YYYYMMDD.1
+#put "%1%\test_%2%" "test_%3%" 
+
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

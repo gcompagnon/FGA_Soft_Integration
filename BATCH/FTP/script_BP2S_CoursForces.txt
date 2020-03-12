@@ -1,0 +1,31 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open BP2S_CoursForces
+
+# pour les tests: aller sur le serveur  xfer-qualif.bnpparibas.com
+#open BP2S_CoursForces_TESTS
+
+option transfer ascii
+
+cd /
+
+put "%1%"
+
+# pour les tests: aller sur le serveur  xfer-qualif.bnpparibas.com
+# put "C:\FEDAMDR1.csv"
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

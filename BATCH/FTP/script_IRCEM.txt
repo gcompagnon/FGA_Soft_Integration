@@ -1,0 +1,32 @@
+﻿#%1% : chemin du fichier source
+#%2% : nom du fichier source
+
+ 
+# Disable overwrite confirmations
+option confirm off
+# all prompts are automatically answered negatively
+option batch abort
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open IRCEM
+
+option transfer ascii
+
+cd /
+put "%1%\%2%" "%2%" 
+
+
+
+
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

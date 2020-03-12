@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<order>
+        <params>
+          <param name="sample_variable_1" value="sample_value_op_1_1"/>
+          <param name="sample_variable_2" value="sample_value_op_1_2"/>
+          <param name="sample_variable_3" value="sample_value_op_1_3"/>
+        </params>
+        <run_time><period single_start="22:12"/></run_time>
+</order>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job>
+    <settings>
+        <mail_on_error><![CDATA[yes]]></mail_on_error>
+
+
+        <mail_on_warning><![CDATA[yes]]></mail_on_warning>
+
+
+        <mail_on_success><![CDATA[yes]]></mail_on_success>
+
+
+        <mail_on_process><![CDATA[yes]]></mail_on_process>
+
+
+        <mail_on_delay_after_error><![CDATA[all]]></mail_on_delay_after_error>
+
+
+        <log_mail_to><![CDATA[gcompagnon@federisga.fr]]></log_mail_to>
+    </settings>
+    <script language="shell"/>
+    <run_time/>
+</job>

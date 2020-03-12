@@ -1,0 +1,20 @@
+﻿ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour récuperer des fichiers
+
+open BP2S_SFTP
+
+cd out
+
+get "*.NAV_FILE*.zip" "\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\BNPP\NAV_FILES\"
+
+
+close
+
+#-----------------------------------------------------
+
+exit
+

@@ -1,0 +1,50 @@
+<html><body>
+<h1>Bienvenue sur le Serveur FGA Int&eacute;gration (d&eacute;veloppement FGA Soft)</h1>
+<br/>
+<h3><A HREF="/viewvc">aller sur: consultation des codes sources</A> ( user: fga, motdepasse: fgafga ) ( serveur CollabNet SubVersion ) </h3>
+<br/>
+<h3><A HREF="/mantisbt">aller sur: gestion des &eacute;volutions, incidents</A> ( serveur MANTIS )</h3>
+<br/>
+<br/>
+<h3><A HREF="http://FX007119M.malakoff-mederic.tec:4444">aller sur: Ordonnanceur (Job scheduler)</A> ( serveur SOS Berlin / JobScheduler )</h3>
+<br/>
+<br/>
+
+<br/>
+<br/>
+<br/>
+<h2>Administration</h2>
+<ul>
+<li><A HREF="http://FX007119M.malakoff-mederic.tec:3343/csvn/login/auth">Administration SubVersion (SVN)</A></li>
+<li>Base Mantis sur serveur: FX007119M\SQLEXPRESS base: bugtracker user: mantis / mantis </li>
+<li><A HREF="/mantisbt/login_select_proj_page.php?ref=/mantisbt/plugin.php?page=XmlImportExport/export"> Export XML des demandes Mantis</A></li>
+<li><A HREF="/mantisbt/login_select_proj_page.php?ref=/mantisbt/plugin.php?page=XmlImportExport/import"> Import XML des demandes Mantis</A></li>
+<li><A HREF="/mantisbt/manage_user_page.php"> Liste des utilisateurs Mantis</A></li>
+<br/>
+<b> Gestion des dates dans Mantis</b><br/>
+Les dates sont stock&eacute;es en format standard Unix ( nb de secondes depuis 01/01/1970 minuit UTC)<br/>
+pour les convertir en format Excel (nb de jours depuis 01/01/1900 minuit à l'heure UTC), il faut copier la formule<br/>
+<code>= ( A1+(DATEVAL("1/1/1970") * (24*60*60) ))/ (24*60*60) </code><br/>
+Pour passer en GMT+2: (fuseau Paris)<br/> 
+<code>= ( A1+ 2209168800 )/ 86400 </code><br/>
+et pour l'importation dans Mantis (Excel vers format Unix)<br/>
+<code>=A1*86400-2209168800</code><br/>
+<br/>
+<b> intégration Subversion dans Mantis (lien des modifs code source dans mantis)</b><br/>
+le commentaire dans le commit Subversion doit contenir : le numéro de la demande mantis sous la forme #n <br/>
+pour mettre un suivi du code source mettre le mot clé :bug, par exemple bug #1 exemple de lien sur la demande n°1<br/>
+pour passer en résolu: mettre le mot clé :fix, par exemple fix #1 la demande n°1 est résolue<br/>
+
+
+</ul>
+<h2>Documentations</h2>
+<ul>
+<li><A HREF="/mantisbt/doc/en/administration_guide.html"> Mantis: Administration </A> </li>
+<!-- <li><A HREF="/mantisbt/doc/en/developers.html"> Mantis: pour les d&eacute;veloppeurs d extension Mantis</A> </li> -->
+
+<li><A HREF="/documentation/Mantis/manuel_MANTIS.pdf"> Mantis: documentation utilisateurs (source: CNRS/internet) </A></lI>
+
+<li><A HREF="/documentation/csvn/svn-book.pdf"> Collabnet SubVersion (csvn): Administration </A> </li>
+</ul>
+
+</body></html>

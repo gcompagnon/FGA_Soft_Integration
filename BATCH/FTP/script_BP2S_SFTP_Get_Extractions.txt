@@ -1,0 +1,21 @@
+﻿#%1% : nom du fichier
+#%2% : chemin des fichiers Iboxx
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur SFTP BNP pour récuperer des fichiers
+
+open BP2S_SFTP
+
+
+cd out
+
+get "%1%" "%2%"\
+
+close
+#-----------------------------------------------------
+
+exit
+

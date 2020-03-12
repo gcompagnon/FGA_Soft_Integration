@@ -1,0 +1,10 @@
+<job order="yes">                
+      	<script language="shell"><![CDATA[      	  
+      	  echo SCHEDULER_PARAM_SAMPLE_SHELL_ALL =%SCHEDULER_PARAM_SAMPLE_SHELL_ALL%
+      	  echo SCHEDULER_PARAM_SAMPLE_SHELL_NOW =%SCHEDULER_PARAM_SAMPLE_SHELL_NOW%
+      	  echo SCHEDULER_PARAM_SAMPLE_SHELL_A   =%SCHEDULER_PARAM_SAMPLE_SHELL_A%
+      	  
+      	  echo sample_shell_now = sample_shell_now: %date%%time%>>%SCHEDULER_RETURN_VALUES% 
+      	  echo sample_shell_b   = sample_shell_b:   %date%%time%>>%SCHEDULER_RETURN_VALUES% 
+      	]]></script> 
+</job>

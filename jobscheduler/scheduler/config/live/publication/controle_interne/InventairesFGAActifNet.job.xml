@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title = "Liste ActifsNets Parts tout fonds FGA">
+<description>
+ donne la liste des Actifs nets dans Omega (fcp.vlrstion) pour tous les fonds FGA actifs (sans filtre) sur une profondeur de 3 MOIS 
+</description>
+    <process file="\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe"
+             param="-nogui -@result_type=1 -@niveau_controle=2 -@date_start=DATEADD(day,-100,@date_end) -sql=$SQL -ini=$INI -xls=$XLS">
+        <environment>
+            <variable name="SQL"
+                      value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\MIDDLE_CONTROLE\Historique_FGA_ACTIF_NET.sql&quot;"/>
+
+		    <variable name="XLS"
+                      value="&quot;\\vill1\Partage\,FGA Soft\BASE\CONTROLE_INTERNE\ActifNet_InventaireFGA\Inventaire_FGA_Mensuel_YYYYMMDD.xls&quot;"/>
+
+            <variable name="INI"
+                      value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+        </environment>
+    </process>
+	<!--start_when_directory_changed directory="\\vill1\Partage\TQA\TOTO"  regex="[.]*\.txt"/-->
+    <run_time let_run="yes">
+        <monthdays>
+            <day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="08:30"/>
+            </day>
+        </monthdays>
+    </run_time>
+</job>

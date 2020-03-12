@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Extraction en fichier Excel des donnees Reporting (PTF_RAPPORT)" order="yes">
+    <description>
+        <![CDATA[
+execute une extraction sur la base PTF_RAPPORT puis produit un fichier Excel
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+	-->
+	<params>
+	  <param name = "dateInventaire" value= ""/>
+	</params>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+        <variable name="SQL"
+				  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\REPORTING\MONITORING\PRODUCTION_EXCEL\MonitoringGroupe.sql&quot;"/>
+				  
+    	<variable name="SQL_CLE"
+				  value="MonitoringGroupeDuration"/>
+
+        <variable name="OUTPUT_PATH"
+                  value="\\vill1\Partage\,FGA Systèmes\PRODUCTION\Monitoring"/>
+
+		<variable name="XLS_FILE"
+                  value="MonitoringGroupeDuration-YYYYMMDD.xlsx"/>			  
+				  
+        <variable name="INI"
+                  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>			  
+
+		<variable name="FGA_AUTOMATE_PATH" 
+		          value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+
+		<variable name="OPEN_XML_PARAM"
+                  value="-#names=RETRAITE;ASSURANCE;EXTERNE;GLOBAL -#style=&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Reporting\stylesMonitoringGroupeDuration.txt&quot; -#template=&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Reporting\TemplateMonitoringGroupe.xlsx&quot; -#graph=&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Reporting\graphMonitoringGroupe.txt&quot;"/>			  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est prise du SQL (la derniere valorisation disponible)
+	-->
+	<script language="shell">
+	<![CDATA[
+	  rem la date est mise au format YYYYMMDD pour faire un répertoire
+	  set PREFIXE_DESTINATION=%SCHEDULER_PARAM_DATEINVENTAIRE:~6,4%-%SCHEDULER_PARAM_DATEINVENTAIRE:~3,2%-%SCHEDULER_PARAM_DATEINVENTAIRE:~0,2%
+	  
+	  IF "%SCHEDULER_PARAM_DATEINVENTAIRE%" == "" GOTO CONFIG_DATE_AUTO
+	  
+	  mkdir "%OUTPUT_PATH%\%PREFIXE_DESTINATION%"
+	  %FGA_AUTOMATE_PATH% -nogui -sql=%SQL% -ini=%INI% -datastore=FGA_PROD -@rapportCle='%SQL_CLE%' -oxlsx="%OUTPUT_PATH%\%PREFIXE_DESTINATION%\%PREFIXE_DESTINATION%_%XLS_FILE%" -@date='%SCHEDULER_PARAM_DATEINVENTAIRE%' -#date=%SCHEDULER_PARAM_DATEINVENTAIRE%  %OPEN_XML_PARAM%
+	  GOTO FIN
+		
+	  :CONFIG_DATE_AUTO
+	  %FGA_AUTOMATE_PATH% -nogui -sql=%SQL% -ini=%INI% -datastore=FGA_PROD -@rapportCle='%SQL_CLE%' -oxlsx="%OUTPUT_PATH%\99991231\LAST_%XLS_FILE%" %OPEN_XML_PARAM%
+	  
+	  :FIN
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <!--run_time let_run="yes">
+        <weekdays>
+            <day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="17:00"/>
+            </day>
+        </weekdays>
+    </run_time-->
+</job>

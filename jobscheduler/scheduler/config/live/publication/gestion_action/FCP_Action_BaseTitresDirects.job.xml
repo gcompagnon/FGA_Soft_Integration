@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="FCP_Actions_BaseTitresDirects" order="no">
+    <description>
+        <![CDATA[
+donne la liste de toutes les actions en position dans les FCP Action avec la pondération / titres vifs
+On prend l'inventaire à J-2 car les sauvegardes se font à J+1 à partir de 15h
+
+        ]]>
+    </description>
+	<!-- les parametres sont modifiables dans l interface web du jobsheduler avec "start Task parametrized" 
+	     les variables SCHEDULER_PARAM_XXXX permettent d accéder aux valeurs des paramètres
+		-->
+
+	<params>
+	  <param name = "date" value= "JJ/MM/AAAA"/>
+	</params>
+
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+        <variable name="SQL"
+                  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\GESTION_ACTION\FCP_Action_BaseTitresDirects.sql&quot;"/>	
+
+        <variable name="OUTPUT_PATH"
+                  value="\\vill1\partage\,FGA Soft\BASE\ACTION\BASE_TITRESDIRECTS"/>
+
+		<variable name="XLS_FILE"
+                  value="Poids_Actions_DansChaqueFCP.xlsx"/>			  
+				  
+        <variable name="INI"
+                  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>			  
+
+		<variable name="FGA_AUTOMATE_PATH" 
+		          value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+
+		<variable name="OPEN_XML_PARAM"
+                  value="-#names=ACTION -#template=&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\PublicationInterne\Template.xlsx&quot; -#graph=&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Reporting\graphBaseMandats.txt&quot;"/>			  
+
+            
+				 				  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est prise du SQL (la derniere valorisation disponible)
+	-->
+	<script language="shell">
+	<![CDATA[
+	  echo off
+	  rem la date de la veille est mise au format YYMMDD pour correspondre aux fichiers des FTP
+	  rem on utilise un petit script VBS pour plus de robustesse (les changements de mois et d'année)
+		echo>_.vbs wscript.echo eval("date-2") 
+		for /f "tokens=*" %%y in ('C:\Windows\System32\cscript.exe /nologo _.vbs') do (set y=%%y) 
+		del _.vbs 2>nul
+	  set date=%y:~6,4%%y:~3,2%%y:~0,2%
+	  
+	  IF "%SCHEDULER_PARAM_DATE%" == "JJ/MM/AAAA" GOTO CONFIG_DATE_AUTO
+	  
+	  set date=%SCHEDULER_PARAM_DATE:~6,4%%SCHEDULER_PARAM_DATE:~3,2%%SCHEDULER_PARAM_DATE:~0,2%
+	  
+	  :CONFIG_DATE_AUTO
+	  %FGA_AUTOMATE_PATH% -nogui -sql=%SQL% -@parametreDate=%date%  -ini=%INI% -datastore=OMEGA -oxlsx="%OUTPUT_PATH%\%date%_%XLS_FILE%" %OPEN_XML_PARAM%
+
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo OK sur la date %date%
+		echo dans "%OUTPUT_PATH%\%XLS_FILE%"
+		goto end
+
+		:error
+		echo Erreur sur la date %date% 
+
+
+		:end
+
+
+
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="05:30"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="05:30"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="05:30"/>
+            </day>
+			<day day="6">
+                <period when_holiday="ignore_holiday"
+                        single_start="05:30"/>
+            </day>
+			<day day="7">
+                <period when_holiday="ignore_holiday"
+                        single_start="05:30"/>
+            </day>
+
+		</weekdays>
+    </run_time>
+</job>

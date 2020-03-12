@@ -1,0 +1,34 @@
+﻿#%1% : nom du fichier
+#%2% : chemin des fichiers destination
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour récuperer des fichiers
+
+open BP2S_CoursForces
+
+# pour les tests: aller sur le serveur  xfer-qualif.bnpparibas.com
+#open BP2S_CoursForces_TESTS
+
+option transfer ascii
+
+cd /
+
+get "%1%" "%2%"\
+
+rename "%1%" "%1%".ACK
+
+# pour les tests: aller sur le serveur  xfer-qualif.bnpparibas.com
+#get "*.VTO11I6R_*.csv"  \\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\BNPP\PASSIF
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

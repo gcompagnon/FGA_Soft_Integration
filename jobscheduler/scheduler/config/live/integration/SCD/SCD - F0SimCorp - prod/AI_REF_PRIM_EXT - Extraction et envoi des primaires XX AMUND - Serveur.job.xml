@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="AI_REF_PRIM_EXT - Extraction et envoi des primaires XX AMUNDI - Serveur" order="no">
+    <description>
+        <![CDATA[
+		AI_REF_PRIM_EXT - Extraction et envoi des primaires XX AMUNDI - Serveur
+        ]]>
+    </description>
+
+	<script language="shell">
+		<![CDATA[
+	"\\vill1\Partage\,FGA Systèmes\SCD\IMPLEMENTATION\1 - IT\BATCH\PROD SERVEUR\AI_REF_PRIM_EXT - Extraction et envoi des primaires XX AMUNDI - Serveur.BAT"
+	]]>
+	</script>
+	<run_time let_run="yes">
+		<weekdays>
+			<day day="2">
+				<period single_start="10:00" when_holiday="ignore_holiday"/>
+				<period single_start="11:00" when_holiday="ignore_holiday"/>
+				<period single_start="12:00" when_holiday="ignore_holiday"/>
+				<period single_start="13:00" when_holiday="ignore_holiday"/>
+				<period single_start="14:00" when_holiday="ignore_holiday"/>
+				<period single_start="15:00" when_holiday="ignore_holiday"/>
+				<period single_start="16:00" when_holiday="ignore_holiday"/>
+				<period single_start="17:00" when_holiday="ignore_holiday"/>
+				<period single_start="18:00" when_holiday="ignore_holiday"/>
+				<period single_start="19:00" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="3">
+				<period single_start="10:00" when_holiday="ignore_holiday"/>
+				<period single_start="11:00" when_holiday="ignore_holiday"/>
+				<period single_start="12:00" when_holiday="ignore_holiday"/>
+				<period single_start="13:00" when_holiday="ignore_holiday"/>
+				<period single_start="14:00" when_holiday="ignore_holiday"/>
+				<period single_start="15:00" when_holiday="ignore_holiday"/>
+				<period single_start="16:00" when_holiday="ignore_holiday"/>
+				<period single_start="17:00" when_holiday="ignore_holiday"/>
+				<period single_start="18:00" when_holiday="ignore_holiday"/>
+				<period single_start="19:00" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="4">
+				<period single_start="10:00" when_holiday="ignore_holiday"/>
+				<period single_start="11:00" when_holiday="ignore_holiday"/>
+				<period single_start="12:00" when_holiday="ignore_holiday"/>
+				<period single_start="13:00" when_holiday="ignore_holiday"/>
+				<period single_start="14:00" when_holiday="ignore_holiday"/>
+				<period single_start="15:00" when_holiday="ignore_holiday"/>
+				<period single_start="16:00" when_holiday="ignore_holiday"/>
+				<period single_start="17:00" when_holiday="ignore_holiday"/>
+				<period single_start="18:00" when_holiday="ignore_holiday"/>
+				<period single_start="19:00" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="5">
+				<period single_start="10:00" when_holiday="ignore_holiday"/>
+				<period single_start="11:00" when_holiday="ignore_holiday"/>
+				<period single_start="12:00" when_holiday="ignore_holiday"/>
+				<period single_start="13:00" when_holiday="ignore_holiday"/>
+				<period single_start="14:00" when_holiday="ignore_holiday"/>
+				<period single_start="15:00" when_holiday="ignore_holiday"/>
+				<period single_start="16:00" when_holiday="ignore_holiday"/>
+				<period single_start="17:00" when_holiday="ignore_holiday"/>
+				<period single_start="18:00" when_holiday="ignore_holiday"/>
+				<period single_start="19:00" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="1">
+				<period single_start="10:00" when_holiday="ignore_holiday"/>
+				<period single_start="11:00" when_holiday="ignore_holiday"/>
+				<period single_start="12:00" when_holiday="ignore_holiday"/>
+				<period single_start="13:00" when_holiday="ignore_holiday"/>
+				<period single_start="14:00" when_holiday="ignore_holiday"/>
+				<period single_start="15:00" when_holiday="ignore_holiday"/>
+				<period single_start="16:00" when_holiday="ignore_holiday"/>
+				<period single_start="17:00" when_holiday="ignore_holiday"/>
+				<period single_start="18:00" when_holiday="ignore_holiday"/>
+				<period single_start="19:00" when_holiday="ignore_holiday"/>
+			</day>
+		</weekdays>
+	</run_time>
+</job>

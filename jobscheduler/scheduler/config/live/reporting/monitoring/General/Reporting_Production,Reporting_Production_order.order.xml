@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<order>
+	<params>
+	  <param name = "dateInventaire" value= ""/>
+	  <param name = "ForcageYN" value= ""/>
+	</params>
+        <run_time>       
+		<!--weekdays>
+            <day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="17:00"/>
+            </day>
+        </weekdays-->
+        </run_time>
+</order>

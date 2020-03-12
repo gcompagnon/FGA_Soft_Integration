@@ -1,0 +1,24 @@
+﻿#%1% : nom du fichier
+#%2% : chemin des fichiers Iboxx
+ 
+# Disable overwrite confirmations
+option confirm off
+#Auto abort on errors 
+option batch abort
+option reconnecttime off
+
+#---------------------------------------------------
+# Connection au serveur SFTP BNP pour récuperer des fichiers
+
+open BP2S_SFTP_QUALIF
+
+
+cd out
+
+get "%1%" "%2%"\
+
+close
+#-----------------------------------------------------
+
+exit
+

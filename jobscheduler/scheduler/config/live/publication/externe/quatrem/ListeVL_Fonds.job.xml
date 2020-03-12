@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title = "Liste des VLs pour des fonds détenus">
+<description>
+ donne la liste des VLs historique pour certains fonds détenus ou non ,sur une profondeur de 10 jours
+</description>
+    <process file="\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe"
+             param="-nogui -sql=$SQL -ini=$INI -csv=$OUTPUT_PATH $CSV_FILES">
+        <environment>
+			<!-- le nom de chaque fichier csv correspondant à un retour de select (si il n y a qu un select dans la requete SQL, il n y a qu un fichier )-->
+			<variable name="CSV_FILES"
+					  value="-#names=CoveaOPCVM_YYYYMMDD.csv"/>
+        <variable name="OUTPUT_PATH"
+                  value="&quot;\\vill1\Public\,FGA Documentation titres\Covea&quot;"/>				  
+            <variable name="SQL"
+                      value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\REFERENTIEL\VL_FondsCOVEA.sql&quot;"/>
+            <variable name="INI"
+                      value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+        </environment>
+    </process>
+	<!--start_when_directory_changed directory="\\vill1\Partage\TQA\TOTO"  regex="[.]*\.txt"/-->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+                <period when_holiday="ignore_holiday"
+                        single_start="22:20"/>
+            </day>		
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="22:20"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="22:20"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="22:20"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="22:20"/>
+            </day>
+		</weekdays>
+    </run_time>
+</job>

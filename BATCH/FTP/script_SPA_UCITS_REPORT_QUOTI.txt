@@ -1,0 +1,24 @@
+﻿#%1% : date demandee au format AAAAMMJJ
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au serveur BNP pour leur envoyer un fichier de cours force
+
+open StatPro
+
+#option transfer ascii
+
+
+synchronize local "\\vill1\partage\,FGA Soft\BASE\CONTROLE_INTERNE\Statpro\UCITS_reports\"  /Export/SI
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

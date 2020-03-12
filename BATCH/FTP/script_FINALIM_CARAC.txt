@@ -1,0 +1,29 @@
+﻿option batch abort
+option confirm off
+
+open FINALIM -passive=on
+
+option transfer ascii
+
+put \\vill1\partage\SCD_FILES_PROD\OUT\DATA\SIX\CARACT\finalimi /*.* 
+
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+ls
+
+close
+exit

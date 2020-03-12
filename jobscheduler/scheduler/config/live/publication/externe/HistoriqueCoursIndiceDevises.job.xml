@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title = "CoursProduitsDevises">
+<description>
+ donne la liste des prix des Indices et devises sur 30 jours (voir les parametres @code_produit1 à 7 et @code_devise1 à 2)
+</description>
+    <process file="\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe"
+             param="-nogui -sql=$SQL -ini=$INI -xls=$XLS -@code_produit1='SBF120NET' -@code_produit2='SP500NET' -@code_produit3='MSCIACAPFNET' -@code_produit4='EONIACAPI' -@code_devise1='USD'">
+        <environment>
+            <variable name="SQL"
+                      value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\EXTERNE\Prix_Historique_Produits_Devises.sql&quot;"/>					 
+		    <variable name="XLS"
+                      value="&quot;\\vill1\Public\,FGA Documentation titres\Indices-Devises\Historique_YYYYMMDD.xls&quot;"/>
+            <variable name="INI"
+                      value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+        </environment>
+    </process>
+	<!--start_when_directory_changed directory="\\vill1\Partage\TQA\TOTO"  regex="[.]*\.txt"/-->
+    <run_time let_run="yes">
+	    <weekdays>
+		<day day="2">
+           <period single_start="08:00"/>
+		</day>
+		</weekdays>
+    </run_time>
+</job>

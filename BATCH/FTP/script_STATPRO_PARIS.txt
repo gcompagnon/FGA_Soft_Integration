@@ -1,0 +1,24 @@
+﻿%1% : chemin du fichier à envoyer
+%2% : chemin destination
+ 
+# Disable overwrite confirmations
+option confirm off
+#Auto abort on errors 
+option batch abort
+
+
+#---------------------------------------------------
+# Connection au serveur STATPRO PARIS ET ENVOI
+
+open StatPro
+
+put "%1%" "%2%"
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

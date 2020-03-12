@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<job_chain   orders_recoverable = "no">
+		<job_chain_node state="Compute_Compte1"  job="Production_Compute_CompteRating"          next_state="Compute_Compte2"  error_state="error" />
+		<job_chain_node state="Compute_Compte2"  job="Production_Compute_CompteRatingDu"          next_state="Compute_Compte3"  error_state="error" />
+		<job_chain_node state="Compute_Compte3"  job="Production_Compute_CompteMaturite"          next_state="Compute_Compte4"  error_state="error" />
+		<job_chain_node state="Compute_Compte4"  job="Production_Compute_CompteMaturiteDu"          next_state="Compute_Compte5"  error_state="error" />
+		<job_chain_node state="Compute_Compte5"  job="Production_Compute_CompteExpoPays"          next_state="Excel_Compte1"  error_state="error" />
+		
+		<job_chain_node state="Excel_Compte1"  job="Production_Excel_CompteRating"          next_state="Excel_Compte2"  error_state="error" />
+		<job_chain_node state="Excel_Compte2"  job="Production_Excel_CompteRatingDu"          next_state="Excel_Compte3"  error_state="error" />
+		<job_chain_node state="Excel_Compte3"  job="Production_Excel_CompteMaturite"          next_state="Excel_Compte4"  error_state="error" />
+		<job_chain_node state="Excel_Compte4"  job="Production_Excel_CompteMaturiteDu"          next_state="Excel_Compte5"  error_state="error" />
+		<job_chain_node state="Excel_Compte5"  job="Production_Excel_CompteExpoPays"          next_state="success"  error_state="error" />
+		
+	<job_chain_node state       = "success"/>
+    <job_chain_node state       = "error"/>
+</job_chain>

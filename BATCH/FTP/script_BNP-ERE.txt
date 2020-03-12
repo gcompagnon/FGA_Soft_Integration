@@ -1,0 +1,27 @@
+﻿#%1% : chemin du fichier à envoyer
+ 
+# Disable overwrite confirmations
+option confirm off
+#Auto abort on errors 
+option batch abort
+
+# ---------------------------------------------------------------------
+# Connection au serveur BNP-EE pour récuperer les fichiers de frais de gestion(pour Nathalie/controle de gestion)
+
+open BNP_ERE
+
+#option transfer ascii
+
+
+get *  "\\vill1\partage\,FGA Soft\BASE\CONTROLE_GESTION\BNP-EE\"
+
+
+# Disconnect
+close
+
+# ---------------------------------------------------------------------
+
+
+# Quit
+exit
+

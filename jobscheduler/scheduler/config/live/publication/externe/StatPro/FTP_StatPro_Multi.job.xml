@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Envoi -> StatPro des fichiers MULTI" order="no">
+    <description>
+        <![CDATA[
+Connection et upload des fichiers d'alimentation de la base Performance de StatPro - fonds multiparts
+        ]]>
+    </description>
+	<!-- les variables d environnement permettent de rendre plus clair la config , on peut utiliser des variables d env système -->
+	<environment>
+		<variable name="LOG"
+				  value="&quot;\\vill1\Partage\,FGA Systèmes\PRODUCTION\FTP\LOG\!Y!M!D-!S-log.txt&quot;"/>		  
+
+		<variable name="SCRIPT_PATH"
+				  value="&quot;C:\FGA_SOFT_INTEGRATION\BATCH\FTP&quot;"/>		  	
+		<variable name="SCRIPT"
+				  value="&quot;script_SPA_MULTI.txt&quot;"/>		  
+		  
+    </environment>
+
+	<!-- Utilisation des parametres de FGA_Automate pour configurer le job: Si il n y a pas date, la date utilisée est celle de la veille
+	-->
+	<script language="shell">
+	<![CDATA[
+	  %SCRIPT_PATH%\Winscp.exe /console /log=%LOG% /script=%SCRIPT_PATH%\%SCRIPT% 
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		goto end
+
+		:error
+		echo Error!
+
+		:end
+    ]]>	
+	</script>
+    <!-- start_when_directory_changed directory=&quot;\\vill1\Partage\TQA\TOTO&quot;  regex=&quot;[.]*\.txt&quot;/ -->
+    <run_time let_run="yes">
+        <weekdays>
+			<day day="1">
+                <period when_holiday="ignore_holiday"
+                        single_start="21:05"/>
+            </day>		
+			<day day="2">
+                <period when_holiday="ignore_holiday"
+                        single_start="21:05"/>
+            </day>
+			<day day="3">
+                <period when_holiday="ignore_holiday"
+                        single_start="21:05"/>
+            </day>
+			<day day="4">
+                <period when_holiday="ignore_holiday"
+                        single_start="21:05"/>
+            </day>
+			<day day="5">
+                <period when_holiday="ignore_holiday"
+                        single_start="21:05"/>
+            </day>
+		</weekdays>
+    </run_time>
+</job>

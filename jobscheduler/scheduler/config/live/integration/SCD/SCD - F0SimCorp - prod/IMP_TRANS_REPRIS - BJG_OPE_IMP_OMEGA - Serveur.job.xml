@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="IMPORTE LES OPE/SR DES PORTEFEUILLES EN PREPROD A PARTIR D OMEGA" order="no">
+    <description>
+        <![CDATA[
+		IMPORTE LES OPE/SR DES PORTEFEUILLES EN PREPROD A PARTIR D OMEGA
+        ]]>
+    </description>
+
+	<script language="shell">
+		<![CDATA[
+	"\\vill1\Partage\,FGA Systèmes\SCD\IMPLEMENTATION\1 - IT\BATCH\PROD SERVEUR\BJG MAJ OPE OMEGA - Serveur.BAT"
+	]]>
+	</script>
+	
+</job>

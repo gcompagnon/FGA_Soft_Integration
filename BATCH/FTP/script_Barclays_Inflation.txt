@@ -1,0 +1,20 @@
+﻿#%1% : date des fichiers voulu au format 120723
+#%2% : chemin des fichiers Inflations
+
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#--------------------------------------------------
+# Connection au preset Inflation
+open Index/Inflation/federis_idx
+get *%1%.csv "%2%"\%1%\
+
+# Disconect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

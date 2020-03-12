@@ -1,0 +1,25 @@
+﻿#%1% : date des fichiers voulu au format AAAAMM
+#%2% : chemin des fichiers Iboxx
+
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au preset Markit
+open Index/Markit/IBOXX_EUR
+
+cd EUR_EOM_COMPONENTS
+get *%1%.csv "%2%"\%1%\
+
+cd ../EUR_EOM_XREF
+get *%1%.csv "%2%"\%1%\
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

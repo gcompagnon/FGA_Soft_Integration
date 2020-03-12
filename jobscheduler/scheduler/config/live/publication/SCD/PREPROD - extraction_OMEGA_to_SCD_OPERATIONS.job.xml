@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<job title="Extraction en fichier CSV des OPERATIONS des OPCVM OMEGA pour SCD" order="no">
+	<description>
+		<![CDATA[
+Extraction en fichier CSV des OPERATIONS des OPCVM OMEGA pour SCD
+        ]]>
+	</description>
+		<environment>
+			<variable name="CSV_FILES"
+				  value="operations"/>
+			<variable name="SQL"
+					  value="&quot;\\vill1\Partage\,FGA Soft\SQL_SCRIPTS\AUTOMATE\SCD\OPERAT_OMEGA.SQL&quot;"/>
+			<variable name="OUTPUT_PATH"
+					  value="&quot;\\vill1\Partage\SCD_FILES_PREPROD\IN\DATA\FGA\TRANSAC&quot;"/>
+			<variable name="FGA_AUTOMATE_PATH" value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\FGA_Automate_Batch.exe&quot;"/>
+			<variable name="INI"
+					  value="&quot;\\vill1\Partage\,FGA Soft\FGA_Automate\FGA_Automate_Batch\Resources\Config\login.ini&quot;"/>
+
+		</environment>
+	<script language="shell">
+		<![CDATA[
+	
+ 
+      %FGA_AUTOMATE_PATH% -nogui -csv=%OUTPUT_PATH% -#names="%CSV_FILES%.csv" -datastore=OMEGA -sql=%SQL% -ini=%INI% %*
+
+	  
+	  IF errorlevel 1 GOTO error
+
+		echo Success
+		goto end
+
+		:error
+		echo Error!
+
+		:end
+    	
+	]]>
+	</script>
+
+	<run_time let_run="yes">
+		<weekdays>
+			<day day="1">
+				<period single_start="20:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="2">
+				<period single_start="20:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="3">
+				<period single_start="20:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="4">
+				<period single_start="20:46" when_holiday="ignore_holiday"/>
+			</day>
+			<day day="5">
+				<period single_start="20:46" when_holiday="ignore_holiday"/>
+			</day>
+		</weekdays>
+	</run_time>
+
+</job>

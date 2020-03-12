@@ -1,0 +1,33 @@
+﻿#%1% : date des fichiers voulu au format 120723
+#%2% : chemin des fichiers Iboxx
+
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#---------------------------------------------------
+# Connection au preset Markit
+open Index/Markit/IBOXX_EUR
+
+cd EUR_EOD_INDICES
+get *%1%.csv "%2%"\%1%\
+
+cd ../EUR_EOD_UNDERLYINGS
+get *%1%.csv "%2%"\%1%\
+
+#--- Ajout des fichiers evolutions IBOXX underlyings
+cd ../EUR_EOD_INDICES\AIR2013
+get *%1%.csv "%2%"\..\IBOXX_EVOLUTION\
+
+cd ../../EUR_EOD_UNDERLYINGS\AIR2013
+get *%1%.csv "%2%"\..\IBOXX_EVOLUTION\
+
+
+# Disconnect
+close
+#-----------------------------------------------------
+
+
+# Quit
+exit
+

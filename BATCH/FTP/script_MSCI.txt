@@ -1,0 +1,25 @@
+﻿#%1% : date des fichiers voulu au format AAAAMMJJ
+#%2% : date des fichiers voulu au format MMJJ
+#%3% : chemin des fichiers 
+
+
+ 
+# Disable overwrite confirmations
+option confirm off
+
+#-------------------------------------------------
+# Connection au preset Nominaux
+open Index/MSCI
+
+get %1%*.zip "%3%"\%1%\
+#delete %1%*.zip
+
+get %2%*.zip "%3%"\%1%\
+#delete %2%*.zip
+# Disconnect
+close
+#---------------------------------------------------
+
+# Quit
+exit
+
